@@ -1,0 +1,129 @@
+{
+  "formatVersion": 1,
+  "type": "reading",
+  "title": "Demo Reading — The Lighthouse Keepers",
+  "durationSeconds": 900,
+  "instructions": "This is a short demonstration test, not a real IELTS paper. It exists to show every question type the app supports.\n\nYou should answer all 12 questions. Read the instructions for each set carefully and observe any word limit given.\n\nYou can change your answers at any time before the test ends.",
+  "parts": [
+    {
+      "part": 1,
+      "heading": "Reading Passage 1",
+      "instructions": "You should spend about 15 minutes on Questions 1–12, which are based on Reading Passage 1 below.",
+      "passage": {
+        "title": "The Lighthouse Keepers",
+        "subtitle": "For three centuries a scattered profession kept the coastlines lit. Then, within a single generation, it disappeared almost entirely.",
+        "paragraphs": [
+          {
+            "label": "A",
+            "text": "The job of the lighthouse keeper was, for most of its history, defined less by heroism than by repetition. A keeper trimmed wicks, polished lenses, wound the clockwork that turned the light, and recorded the weather in a logbook at fixed hours. The work was exacting rather than difficult, and its central demand was consistency: a light that failed for even an hour could undo the reputation of a station built over decades."
+          },
+          {
+            "label": "B",
+            "text": "Isolation shaped the profession more than any other factor. Offshore towers, known in the service as rock stations, might be supplied only every few weeks, and in poor weather a relief boat could be delayed for months. Keepers at such postings worked in teams of three, an arrangement adopted after an incident in which a keeper died and his sole companion, fearing an accusation of murder, kept the body on the gallery until the relief arrived. Three men meant that no one was ever alone with a corpse, or with a decision."
+          },
+          {
+            "label": "C",
+            "text": "Onshore stations were a different life entirely. Families lived alongside the keeper, children walked to village schools, and gardens were cultivated in the lee of the tower. The service encouraged this: a keeper with a household nearby was thought less likely to abandon a difficult posting. Pay was modest but the accommodation was free, and the position carried a respectability out of proportion to its salary."
+          },
+          {
+            "label": "D",
+            "text": "Technology eroded the profession gradually and then all at once. Clockwork mechanisms gave way to electric motors, oil lamps to sealed-beam bulbs, and manual weather observation to automatic instruments. Each change removed a task. By the middle of the twentieth century a keeper's duties had contracted to little more than supervision, and supervision is precisely what a telemetry link can provide from a distance."
+          },
+          {
+            "label": "E",
+            "text": "The final wave of automation was swift. Britain removed its last resident keepers in 1998; Canada, unusually, retained staffed stations on parts of its western coast into the present century, arguing that keepers provided weather reports and rescue assistance that machines could not. That argument has never been fully settled. Automated lights are cheaper and, by most measures, no less reliable, but they cannot see a small boat in trouble and report it."
+          },
+          {
+            "label": "F",
+            "text": "What has survived is the architecture. Towers that were built to be functional are now protected as heritage, and a surprising number have been converted into accommodation for visitors who pay for precisely the isolation that keepers once endured as a condition of employment. The lens rooms, stripped of their original optics, are the most photographed rooms in the buildings."
+          }
+        ]
+      },
+      "groups": [
+        {
+          "type": "matching",
+          "instructions": "Reading Passage 1 has six paragraphs, A–F.\n\nChoose the correct heading for paragraphs B, C and E from the list of headings below.",
+          "optionsTitle": "List of Headings",
+          "options": [
+            { "key": "i", "text": "A debate that remains open" },
+            { "key": "ii", "text": "Domestic life at the tower" },
+            { "key": "iii", "text": "The buildings outlive the profession" },
+            { "key": "iv", "text": "Why three was the required number" },
+            { "key": "v", "text": "The cost of building offshore" },
+            { "key": "vi", "text": "Routine as the core of the work" }
+          ],
+          "examples": [{ "prompt": "Paragraph A", "key": "vi" }],
+          "questions": [
+            { "n": 1, "prompt": "Paragraph B" },
+            { "n": 2, "prompt": "Paragraph C" },
+            { "n": 3, "prompt": "Paragraph E" }
+          ]
+        },
+        {
+          "type": "tf-ng",
+          "instructions": "Do the following statements agree with the information given in Reading Passage 1?\n\nTRUE if the statement agrees with the information\nFALSE if the statement contradicts the information\nNOT GIVEN if there is no information on this",
+          "questions": [
+            {
+              "n": 4,
+              "prompt": "Rock stations were staffed by three keepers because of an earlier incident involving a death."
+            },
+            {
+              "n": 5,
+              "prompt": "Lighthouse keepers were among the highest-paid public servants of their era."
+            },
+            {
+              "n": 6,
+              "prompt": "Canada kept staffed lighthouses in service later than Britain did."
+            }
+          ]
+        },
+        {
+          "type": "gap",
+          "instructions": "Complete the notes below.",
+          "limit": "NO MORE THAN TWO WORDS from the passage",
+          "body": {
+            "kind": "notes",
+            "heading": "Decline of the profession",
+            "items": [
+              { "text": "Each technological change removed a task:", "indent": 0 },
+              { "text": "{{7}} mechanisms replaced by electric motors", "indent": 1 },
+              { "text": "Manual weather observation replaced by automatic {{8}}", "indent": 1 },
+              { "text": "Britain removed its last resident keepers in {{9}}", "indent": 0 }
+            ]
+          },
+          "questions": [{ "n": 7 }, { "n": 8 }, { "n": 9 }]
+        },
+        {
+          "type": "mcq",
+          "instructions": "Choose the correct letter, A, B, C or D.",
+          "questions": [
+            {
+              "n": 10,
+              "prompt": "The writer suggests that the central skill required of a keeper was",
+              "options": [
+                "physical courage in bad weather.",
+                "reliability over long periods.",
+                "mechanical expertise.",
+                "the ability to work alone."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mcq-multi",
+          "instructions": "Choose TWO letters, A–E.",
+          "prompt": "Which TWO reasons does the writer give for retaining human keepers?",
+          "options": [
+            "They cost less than automated systems",
+            "They can supply weather reports",
+            "They can spot and report vessels in difficulty",
+            "They maintain the heritage value of the buildings",
+            "They are more reliable than automated lights"
+          ],
+          "pick": 2,
+          "range": [11, 12]
+        }
+      ]
+    }
+  ]
+}

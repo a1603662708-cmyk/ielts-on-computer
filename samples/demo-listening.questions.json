@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "type": "listening",
+  "title": "Demo Listening — Format Template",
+  "durationSeconds": 2040,
+  "instructions": "This is a format template, not a real IELTS paper.\n\nReplace the placeholder URLs in \"audio\" with your own recordings before using it. Recordings play one after another and cannot be paused, rewound or replayed.",
+  "audio": [
+    { "part": 1, "url": "https://example.invalid/replace-me-part-1.mp3" },
+    { "part": 2, "url": "https://example.invalid/replace-me-part-2.mp3" },
+    { "part": 3, "url": "https://example.invalid/replace-me-part-3.mp3" },
+    { "part": 4, "url": "https://example.invalid/replace-me-part-4.mp3" }
+  ],
+  "parts": [
+    {
+      "part": 1,
+      "heading": "Part 1",
+      "instructions": "Listen and answer questions 1–4.",
+      "groups": [
+        {
+          "type": "mcq",
+          "instructions": "Choose the correct letter, A, B or C.",
+          "questions": [
+            {
+              "n": 1,
+              "prompt": "Where does the caller want to travel?",
+              "options": ["the coast", "the mountains", "the lakes"]
+            }
+          ]
+        },
+        {
+          "type": "matching",
+          "instructions": "Complete the notes below using words from the options given.",
+          "optionsTitle": "Choose from",
+          "options": [
+            { "key": "Monday", "text": "Monday" },
+            { "key": "Tuesday", "text": "Tuesday" },
+            { "key": "Friday", "text": "Friday" }
+          ],
+          "questions": [
+            { "n": 2, "prompt": "Day the office is closed: __________" }
+          ]
+        },
+        {
+          "type": "gap",
+          "instructions": "Complete the form below.",
+          "limit": "NO MORE THAN THREE WORDS OR A NUMBER",
+          "body": {
+            "kind": "table",
+            "headers": ["Field", "Detail"],
+            "rows": [
+              ["Surname", "{{3}}"],
+              ["Reference number", "{{4}}"]
+            ]
+          },
+          "questions": [{ "n": 3 }, { "n": 4 }]
+        }
+      ]
+    },
+    {
+      "part": 2,
+      "heading": "Part 2",
+      "instructions": "Listen and answer questions 5 and 6.",
+      "groups": [
+        {
+          "type": "mcq-multi",
+          "instructions": "Choose TWO letters, A–D.",
+          "prompt": "Which TWO facilities are currently unavailable?",
+          "options": ["the pool", "the café", "the car park", "the gym"],
+          "pick": 2,
+          "range": [5, 6]
+        }
+      ]
+    }
+  ]
+}
