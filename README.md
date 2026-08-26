@@ -243,7 +243,7 @@ your own copies for personal study if you wish, but please do not redistribute t
 
 ## License
 
-[MIT](LICENSE) © Nahin
+[MIT](LICENSE) © Asrafuzzaman Khan Nahin
 
 The IELTS trademark is the property of the British Council, IDP: IELTS Australia and Cambridge
 University Press & Assessment. This project is unofficial and unaffiliated.

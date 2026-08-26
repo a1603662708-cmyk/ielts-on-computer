@@ -1,6 +1,9 @@
 {
   "name": "ielts-on-computer",
   "version": "0.1.0",
+  "description": "Practice harness for the computer-delivered IELTS Listening and Academic Reading tests.",
+  "author": "Asrafuzzaman Khan Nahin",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -24,7 +27,5 @@
     "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
-  },
-  "description": "Practice harness for the computer-delivered IELTS Listening and Academic Reading tests.",
-  "license": "MIT"
+  }
 }
