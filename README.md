@@ -78,27 +78,18 @@ A complete 12-question Reading test that exercises every supported question type
 
 ## What it reproduces
 
-Each row is a behaviour from the official walkthrough, with its timestamp in that video.
-
-| | Feature | |
-| :-- | :-- | :-- |
-| `0:17` | **Countdown timer** | Fixed to a wall-clock deadline, so it stays accurate through tab throttling and sleep |
-| `0:28` | **Part instructions** | Rendered in the bordered box at the top of the question pane |
-| `0:35` | **Navigation bar** | Every question number along the bottom, grouped by part, with arrows between parts |
-| `0:55` | **Answered indicator** | An underline appears beneath a question number once it has an answer |
-| `1:03` | **Flags** | Flag a question, jump back to it from the nav bar, unflag it |
-| `1:44` | **Options menu** | Available for the entire test from the top-right |
-| `2:05` | **Contrast** | Black on white · White on black · Yellow on black |
-| `2:26` | **Text size** | Regular · Large · Extra large |
-| `2:46` | **Volume** | Listening only, bottom-right. The *only* audio control exposed during the test |
-| `2:57` | **Test instructions** | Reachable from the options menu at any point |
-| `3:12` | **Highlighting** | Drag to select, then Highlight; click a highlight to delete it |
-| `3:37` | **Notes** | Anchored to the selected text, autosaving, reopenable, deleted behind a two-step confirm |
-| `4:26` | **One-minute warning** | The entire top band changes colour |
-| `4:39` | **Auto-submit** | The test ends itself when the clock reaches zero |
-
-**Listening audio** plays each part back to back with no gap and offers no pause, seek or replay —
-matching the real exam, where you hear each recording once.
+The interface follows the official [*IELTS on computer — Quick Guide*](https://www.youtube.com/watch?v=4_dCncUPBO4)
+walkthrough feature by feature: the countdown timer fixed to a wall-clock deadline so it survives
+tab throttling and sleep, part instructions in their bordered box, the navigation bar listing every
+question number grouped by part with arrows between them, the underline that appears beneath a
+number once it is answered, flagging and jumping back to flagged questions, the options menu
+available throughout, all three contrast modes (black on white, white on black, yellow on black)
+and three text sizes, the volume slider that is the only audio control exposed during a Listening
+test, test instructions reachable at any point, drag-to-select highlighting with click-to-delete,
+notes anchored to the selected text that autosave and reopen and take two steps to delete, the
+top band changing colour with one minute left, and the test submitting itself when the clock
+reaches zero. Listening audio plays each part back to back with no gap and offers no pause, seek or
+replay — matching the real exam, where you hear each recording once.
 
 ### Two deliberate departures
 
