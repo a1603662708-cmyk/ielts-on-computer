@@ -9,7 +9,7 @@ Every test is **two JSON files**:
 
 Both are validated when you load them. Errors block the start; warnings don't.
 
-Two worked examples live in [`samples/`](../samples):
+Two worked examples live in [`public/samples/`](../public/samples):
 
 - `demo-reading.*` — a complete, runnable 12-question Reading test exercising every group type
 - `demo-listening.*` — a Listening skeleton showing the `audio` array and form/table completion

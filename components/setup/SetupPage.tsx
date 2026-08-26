@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileDrop } from "./FileDrop";
+import { SampleTests, type SampleFiles } from "./SampleTests";
 import { useTestStore } from "@/lib/store";
 import { formatDuration } from "@/lib/useTimer";
 import {
@@ -80,6 +81,15 @@ export function SetupPage({ type }: { type: TestType }) {
       issues: parsed.ok ? [] : parsed.issues,
     });
   }, []);
+
+  /** Fills both slots from the bundled demo, as if the files had been dropped. */
+  const loadSample = useCallback(
+    (files: SampleFiles) => {
+      handleQuestions(files.questions.text, files.questions.filename);
+      handleAnswers(files.answers.text, files.answers.filename);
+    },
+    [handleQuestions, handleAnswers],
+  );
 
   const tracks = useMemo(
     () => (test?.type === "listening" ? (test.audio ?? []) : []),
@@ -184,6 +194,8 @@ export function SetupPage({ type }: { type: TestType }) {
           onText={handleAnswers}
         />
       </div>
+
+      {questions.filename === null && <SampleTests type={type} onLoad={loadSample} />}
 
       {wrongType && (
         <IssueList

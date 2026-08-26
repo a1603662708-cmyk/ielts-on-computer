@@ -6,6 +6,8 @@
 
 Bring your own question papers as JSON. Sit them under exam conditions. Get a band score.
 
+**[Try it live →](https://ielts-on-computer.netlify.app/)**
+
 [Getting started](#getting-started) · [File format](docs/FORMAT.md) · [What it reproduces](#what-it-reproduces) · [Architecture](#architecture)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=nextdotjs&logoColor=white)
@@ -13,6 +15,7 @@ Bring your own question papers as JSON. Sit them under exam conditions. Get a ba
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
+[![Live demo](https://img.shields.io/badge/live%20demo-ielts--on--computer.netlify.app-38bdf8)](https://ielts-on-computer.netlify.app/)
 
 </div>
 
@@ -37,6 +40,9 @@ anywhere — your question files are read with the File API and never leave the 
 
 ## Getting started
 
+The app is deployed at **<https://ielts-on-computer.netlify.app/>** — nothing to install, and your
+files still never leave your browser. To run it yourself:
+
 **Requirements:** Node.js 20 or later.
 
 ```bash
@@ -58,11 +64,12 @@ Open <http://localhost:3000>.
 4. When the time runs out — or when you submit early — you get a band score, a per-part breakdown,
    and a question-by-question review.
 
-Try it immediately with the bundled demo:
+Try it immediately with the bundled demo — the setup screen offers to load it for you, or grab the
+files directly:
 
 ```
-samples/demo-reading.questions.json
-samples/demo-reading.answers.json
+public/samples/demo-reading.questions.json
+public/samples/demo-reading.answers.json
 ```
 
 A complete 12-question Reading test that exercises every supported question type.
