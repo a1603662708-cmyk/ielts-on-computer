@@ -1,133 +1,231 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import type { Test } from "@/lib/schema";
 import { useTestStore } from "@/lib/store";
+import { resolveAsset } from "@/storage/db";
+import { audioPosition, clockNow } from "@/exam/clock";
 
-/**
- * Plays the listening recordings back to back (video 2:46 for the volume
- * control). There is deliberately no play, pause, seek or replay: the only
- * exposed control is volume, exactly as in the real test.
- *
- * The next part is preloaded in a second element while the current one plays,
- * so the switch between parts has no audible gap.
- */
 export function AudioRunner({ test }: { test: Test }) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const preloadRef = useRef<HTMLAudioElement | null>(null);
-
-  const volume = useTestStore((s) => s.session?.volume ?? 0.8);
-  const setAudioPart = useTestStore((s) => s.setAudioPart);
-  const setActivePart = useTestStore((s) => s.setActivePart);
-
-  const tracks = test.audio ?? [];
-  const [index, setIndex] = useState(0);
+  const ref = useRef<HTMLAudioElement>(null);
+  const session = useTestStore((s) => s.session);
+  const [index, setIndex] = useState(
+    () => useTestStore.getState().session?.audioIndex ?? 0,
+  );
+  const [error, setError] = useState("");
   const [blocked, setBlocked] = useState(false);
-
-  const current = tracks[index];
-
+  const [loading, setLoading] = useState(true);
+  const [rate, setRate] = useState(1);
+  const rateRef = useRef(1);
+  const tracks = test.audio;
+  const mode = session?.mode ?? "mock";
+  const paused = Boolean(session?.pausedAt);
+  const volume = session?.volume ?? 0.8;
   useEffect(() => {
-    const el = audioRef.current;
-    if (!el || !current) return;
-
-    el.src = current.url;
-    el.volume = volume;
-    setAudioPart(current.part);
-
-    void el.play().then(
-      () => setBlocked(false),
-      // Autoplay policy can still refuse if the gesture chain was broken by a
-      // refresh. Surface a one-click resume rather than failing silently.
-      () => setBlocked(true),
-    );
-
-    // Warm the next track so the handover is seamless.
-    const next = tracks[index + 1];
-    if (next) {
-      const warm = new Audio();
-      warm.preload = "auto";
-      warm.src = next.url;
-      warm.load();
-      preloadRef.current = warm;
+    let cancelled = false;
+    let objectURL = "";
+    const el = ref.current;
+    if (!el || !tracks) return;
+    async function load() {
+      const s = useTestStore.getState().session;
+      if (!s || !el || !tracks) return;
+      let target = index;
+      let offset = s.audioOffset;
+      if (s.mode === "mock" && tracks.every((t) => t.duration)) {
+        const pos = audioPosition(
+          tracks.map((t) => t.duration!),
+          (clockNow() - s.startedAt) / 1000,
+        );
+        target = pos.index;
+        offset = pos.offset;
+        if (target !== index) {
+          setIndex(target);
+          return;
+        }
+      }
+      if (!tracks[target]) {
+        useTestStore.getState().setAudioPart(-1);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError("");
+      try {
+        objectURL = await resolveAsset(tracks[target].url);
+        if (cancelled) {
+          if (objectURL.startsWith("blob:")) URL.revokeObjectURL(objectURL);
+          return;
+        }
+        el.src = objectURL;
+        el.onloadedmetadata = () => {
+          el.playbackRate = s.mode === "practice" ? rateRef.current : 1;
+          el.currentTime = Math.min(offset, Math.max(0, el.duration - 0.01));
+          setLoading(false);
+          if (!useTestStore.getState().session?.pausedAt)
+            void el
+              .play()
+              .then(() => setBlocked(false))
+              .catch(() => setBlocked(true));
+        };
+        el.load();
+        if (s.audioPart !== tracks[target].part)
+          useTestStore.getState().setActivePart(tracks[target].part);
+        useTestStore.getState().setAudioPart(tracks[target].part);
+      } catch (e) {
+        setError(String(e));
+        setLoading(false);
+      }
     }
-
+    void load();
     return () => {
-      preloadRef.current?.pause();
-      preloadRef.current = null;
+      cancelled = true;
+      el.pause();
+      el.onloadedmetadata = null;
+      el.removeAttribute("src");
+      el.load();
+      if (objectURL.startsWith("blob:")) URL.revokeObjectURL(objectURL);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, current?.url]);
-
+  }, [index, tracks]);
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
+    if (ref.current) ref.current.volume = volume;
   }, [volume]);
-
-  function onEnded() {
-    if (index + 1 < tracks.length) {
-      const next = tracks[index + 1];
-      setIndex(index + 1);
-      // Follow the recording to the matching part, as the real test does.
-      setActivePart(next.part);
-    } else {
-      setAudioPart(-1);
+  useEffect(() => {
+    if (ref.current) {
+      if (paused) ref.current.pause();
+      else if (ref.current.src && !ref.current.ended)
+        void ref.current.play().catch(() => setBlocked(true));
     }
+  }, [paused]);
+  useEffect(() => {
+    if (ref.current) ref.current.playbackRate = mode === "practice" ? rate : 1;
+  }, [rate, mode]);
+  if (!tracks?.length) return <p role="alert">No audio attached.</p>;
+  function ended() {
+    const next = index + 1;
+    useTestStore.getState().audioProgress(next, 0);
+    setIndex(next);
+    if (tracks?.[next])
+      useTestStore.getState().setActivePart(tracks[next].part);
   }
-
-  if (tracks.length === 0) return null;
-
   return (
-    <>
+    <div className="audio-strip">
       <audio
-        ref={audioRef}
-        onEnded={onEnded}
-        // If a recording errors mid-test, move on rather than stalling the run.
-        onError={onEnded}
+        ref={ref}
+        controls={mode === "practice" && !paused}
         preload="auto"
+        onEnded={ended}
+        onTimeUpdate={() => {
+          const el = ref.current;
+          if (el && !el.seeking)
+            useTestStore.getState().audioProgress(index, el.currentTime);
+        }}
+        onError={() => {
+          if (ref.current?.getAttribute("src")) {
+            setError(
+              "Audio could not be decoded or loaded. Your answers are saved. The Mock clock continues.",
+            );
+            setLoading(false);
+          }
+        }}
       />
+      {loading && <span role="status">Loading audio…</span>}
+      {error && <span role="alert">{error}</span>}
       {blocked && (
         <button
-          type="button"
-          onClick={() => void audioRef.current?.play().then(() => setBlocked(false))}
-          className="rounded bg-[var(--accent)] px-3 py-1.5 text-sm font-semibold text-[var(--accent-fg)]"
+          onClick={() => {
+            const el = ref.current;
+            const s = useTestStore.getState().session;
+            if (!el || !s) return;
+            if (mode === "mock" && tracks.every((t) => t.duration)) {
+              const pos = audioPosition(
+                tracks.map((t) => t.duration!),
+                (clockNow() - s.startedAt) / 1000,
+              );
+              if (pos.index !== index) {
+                setIndex(pos.index);
+                return;
+              }
+              el.currentTime = pos.offset;
+            }
+            void el
+              .play()
+              .then(() => setBlocked(false))
+              .catch((e) => setError(String(e)));
+          }}
         >
-          Resume audio
+          Enable audio
         </button>
       )}
-    </>
+      {mode === "practice" && (
+        <>
+          <label>
+            Speed{" "}
+            <select
+              value={rate}
+              onChange={(e) => {
+                rateRef.current = Number(e.target.value);
+                setRate(rateRef.current);
+              }}
+            >
+              {[0.75, 1, 1.25, 1.5, 2].map((r) => (
+                <option key={r}>{r}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Recording{" "}
+            <select
+              aria-label="Recording"
+              value={Math.min(index, tracks.length - 1)}
+              onChange={(e) => {
+                useTestStore
+                  .getState()
+                  .audioProgress(Number(e.target.value), 0);
+                setIndex(Number(e.target.value));
+              }}
+            >
+              {tracks.map((t, i) => (
+                <option value={i} key={i}>
+                  Part {t.part}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            disabled={paused}
+            onClick={() => {
+              if (index >= tracks.length) {
+                const target = tracks.length - 1;
+                useTestStore.getState().audioProgress(target, 0);
+                setIndex(target);
+              } else if (ref.current) {
+                ref.current.currentTime = 0;
+                void ref.current.play().catch((e) => setError(String(e)));
+              }
+            }}
+          >
+            Replay
+          </button>
+        </>
+      )}
+      <VolumeControl />
+    </div>
   );
 }
-
-/** Volume control, bottom right of the screen (video 2:46). */
 export function VolumeControl() {
   const volume = useTestStore((s) => s.session?.volume ?? 0.8);
-  const audioPart = useTestStore((s) => s.session?.audioPart ?? -1);
-  const setVolume = useTestStore((s) => s.setVolume);
-
+  const set = useTestStore((s) => s.setVolume);
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-raised)] px-3 py-2 shadow-lg">
-      <span className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-        {audioPart > 0 ? `Part ${audioPart}` : "Audio ended"}
-      </span>
-      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden focusable="false">
-        <path d="M2 6h3l4-3v10L5 10H2z" fill="currentColor" />
-        <path
-          d="M11 5.5a3.5 3.5 0 010 5M12.8 3.5a6 6 0 010 9"
-          stroke="currentColor"
-          strokeWidth="1.3"
-          fill="none"
-          strokeLinecap="round"
-        />
-      </svg>
+    <label className="flex items-center gap-2 text-sm">
+      Volume{" "}
       <input
-        type="range"
-        min={0}
-        max={1}
-        step={0.02}
-        value={volume}
-        onChange={(e) => setVolume(Number(e.target.value))}
         aria-label="Volume"
-        className="w-28"
+        type="range"
+        min="0"
+        max="1"
+        step=".02"
+        value={volume}
+        onChange={(e) => set(Number(e.target.value))}
       />
-    </div>
+    </label>
   );
 }

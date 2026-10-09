@@ -47,7 +47,10 @@ export function SplitPane({
 
   return (
     <div ref={containerRef} className="flex min-h-0 flex-1">
-      <div className="min-w-0 overflow-hidden" style={{ flexBasis: `${ratio * 100}%` }}>
+      <div
+        className="min-w-0 overflow-hidden"
+        style={{ flexBasis: `${ratio * 100}%` }}
+      >
         {left}
       </div>
 
@@ -64,7 +67,8 @@ export function SplitPane({
         }}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft") setSplitRatio(Math.max(0.2, ratio - 0.02));
-          if (e.key === "ArrowRight") setSplitRatio(Math.min(0.8, ratio + 0.02));
+          if (e.key === "ArrowRight")
+            setSplitRatio(Math.min(0.8, ratio + 0.02));
         }}
         className="group w-2 shrink-0 cursor-col-resize bg-[var(--border)] hover:bg-[var(--border-strong)]"
       >

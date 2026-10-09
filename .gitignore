@@ -42,3 +42,8 @@ next-env.d.ts
 
 # Local-only reference material (copyrighted Cambridge test content)
 /samples_old
+
+.next-dev/
+src-tauri/target/
+playwright-report/
+test-results/

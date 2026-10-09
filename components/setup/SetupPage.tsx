@@ -1,4 +1,5 @@
 "use client";
+import { prepareAudio } from "@/exam/audio";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,7 +29,11 @@ type Slot<T> = {
 
 const EMPTY = { filename: null, value: null, issues: [] };
 
-type AudioProbe = { part: number; url: string; state: "pending" | "ok" | "failed" };
+type AudioProbe = {
+  part: number;
+  url: string;
+  state: "pending" | "ok" | "failed";
+};
 
 export function SetupPage({ type }: { type: TestType }) {
   const router = useRouter();
@@ -36,7 +41,9 @@ export function SetupPage({ type }: { type: TestType }) {
 
   const [questions, setQuestions] = useState<Slot<Test>>(EMPTY);
   const [answers, setAnswers] = useState<Slot<AnswerKey>>(EMPTY);
-  const [probeState, setProbeState] = useState<Record<string, "ok" | "failed">>({});
+  const [probeState, setProbeState] = useState<Record<string, "ok" | "failed">>(
+    {},
+  );
   const [starting, setStarting] = useState(false);
 
   const test = questions.value;
@@ -49,24 +56,21 @@ export function SetupPage({ type }: { type: TestType }) {
 
   const wrongType = test !== null && test.type !== type;
 
-  const handleQuestions = useCallback(
-    (text: string, filename: string) => {
-      const json = parseJson(text);
-      if (!json.ok) {
-        setQuestions({ filename, value: null, issues: json.issues });
-        return;
-      }
-      const parsed = parseTest(json.value);
-      if (!parsed.ok) {
-        setQuestions({ filename, value: null, issues: parsed.issues });
-        return;
-      }
-      const issues = validateTestInternals(parsed.value);
-      const fatal = issues.some((i) => i.level === "error");
-      setQuestions({ filename, value: fatal ? null : parsed.value, issues });
-    },
-    [],
-  );
+  const handleQuestions = useCallback((text: string, filename: string) => {
+    const json = parseJson(text);
+    if (!json.ok) {
+      setQuestions({ filename, value: null, issues: json.issues });
+      return;
+    }
+    const parsed = parseTest(json.value);
+    if (!parsed.ok) {
+      setQuestions({ filename, value: null, issues: parsed.issues });
+      return;
+    }
+    const issues = validateTestInternals(parsed.value);
+    const fatal = issues.some((i) => i.level === "error");
+    setQuestions({ filename, value: fatal ? null : parsed.value, issues });
+  }, []);
 
   const handleAnswers = useCallback((text: string, filename: string) => {
     const json = parseJson(text);
@@ -110,7 +114,9 @@ export function SetupPage({ type }: { type: TestType }) {
     let cancelled = false;
     const settle = (url: string, state: "ok" | "failed") => {
       if (cancelled) return;
-      setProbeState((prev) => (prev[url] === state ? prev : { ...prev, [url]: state }));
+      setProbeState((prev) =>
+        prev[url] === state ? prev : { ...prev, [url]: state },
+      );
     };
 
     const elements = tracks.map((entry) => {
@@ -120,9 +126,15 @@ export function SetupPage({ type }: { type: TestType }) {
       // requiring CORS here would block Start on files that play perfectly.
       // `canplay` is enough to know the URL resolves; some servers never let
       // `canplaythrough` fire without a full download.
-      el.addEventListener("canplay", () => settle(entry.url, "ok"), { once: true });
-      el.addEventListener("canplaythrough", () => settle(entry.url, "ok"), { once: true });
-      el.addEventListener("error", () => settle(entry.url, "failed"), { once: true });
+      el.addEventListener("canplay", () => settle(entry.url, "ok"), {
+        once: true,
+      });
+      el.addEventListener("canplaythrough", () => settle(entry.url, "ok"), {
+        once: true,
+      });
+      el.addEventListener("error", () => settle(entry.url, "failed"), {
+        once: true,
+      });
       el.src = entry.url;
       el.load();
       return el;
@@ -138,12 +150,18 @@ export function SetupPage({ type }: { type: TestType }) {
   }, [tracks]);
 
   const probes: AudioProbe[] = useMemo(
-    () => tracks.map((t) => ({ part: t.part, url: t.url, state: probeState[t.url] ?? "pending" })),
+    () =>
+      tracks.map((t) => ({
+        part: t.part,
+        url: t.url,
+        state: probeState[t.url] ?? "pending",
+      })),
     [tracks, probeState],
   );
 
   const audioReady =
-    test?.type !== "listening" || (probes.length > 0 && probes.every((p) => p.state === "ok"));
+    test?.type !== "listening" ||
+    (probes.length > 0 && probes.every((p) => p.state === "ok"));
 
   const ready = test !== null && key !== null && !wrongType && audioReady;
 
@@ -156,13 +174,19 @@ export function SetupPage({ type }: { type: TestType }) {
     };
   }, [test]);
 
-  function onStart() {
+  async function onStart() {
     if (!test || !key) return;
     setStarting(true);
     // Fullscreen and audio both need this click as their user gesture; the
     // test page picks it up from the store on mount.
-    start(test, key);
-    router.push("/test");
+    try {
+      const prepared = await prepareAudio(test);
+      start(prepared, key);
+      router.push("/test");
+    } catch (e) {
+      window.alert(String(e));
+      setStarting(false);
+    }
   }
 
   const label = type === "listening" ? "Listening" : "Reading";
@@ -174,8 +198,8 @@ export function SetupPage({ type }: { type: TestType }) {
       </Link>
       <h1 className="mt-3 text-2xl font-bold">Load a {label} test</h1>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Both files are validated before the test can start. Nothing is uploaded anywhere — the
-        files are read in your browser.
+        Both files are validated before the test can start. Nothing is uploaded
+        anywhere — the files are read in your browser.
       </p>
 
       <div className="mt-8 grid gap-4">
@@ -183,19 +207,29 @@ export function SetupPage({ type }: { type: TestType }) {
           label="Questions file"
           hint={`e.g. samples/demo-${type}.questions.json`}
           filename={questions.filename}
-          status={questions.filename === null ? "empty" : questions.value ? "ok" : "error"}
+          status={
+            questions.filename === null
+              ? "empty"
+              : questions.value
+                ? "ok"
+                : "error"
+          }
           onText={handleQuestions}
         />
         <FileDrop
           label="Answers file"
           hint={`e.g. samples/demo-${type}.answers.json`}
           filename={answers.filename}
-          status={answers.filename === null ? "empty" : answers.value ? "ok" : "error"}
+          status={
+            answers.filename === null ? "empty" : answers.value ? "ok" : "error"
+          }
           onText={handleAnswers}
         />
       </div>
 
-      {questions.filename === null && <SampleTests type={type} onLoad={loadSample} />}
+      {questions.filename === null && (
+        <SampleTests type={type} onLoad={loadSample} />
+      )}
 
       {wrongType && (
         <IssueList
@@ -217,12 +251,15 @@ export function SetupPage({ type }: { type: TestType }) {
         <section className="mt-6 rounded-lg border border-[var(--border)] p-4">
           <h2 className="font-semibold">Audio</h2>
           <p className="mt-0.5 text-sm text-[var(--muted)]">
-            Every recording is buffered before the test starts, because playback cannot be paused
-            once it begins.
+            Every recording is buffered before the test starts, because playback
+            cannot be paused once it begins.
           </p>
           <ul className="mt-3 space-y-1.5 text-sm">
             {probes.map((p) => (
-              <li key={`${p.part}-${p.url}`} className="flex items-baseline gap-2">
+              <li
+                key={`${p.part}-${p.url}`}
+                className="flex items-baseline gap-2"
+              >
                 <span
                   aria-hidden
                   className={
@@ -236,14 +273,16 @@ export function SetupPage({ type }: { type: TestType }) {
                   {p.state === "ok" ? "✓" : p.state === "failed" ? "✕" : "…"}
                 </span>
                 <span className="font-medium">Part {p.part}</span>
-                <span className="min-w-0 truncate text-[var(--muted)]">{p.url}</span>
+                <span className="min-w-0 truncate text-[var(--muted)]">
+                  {p.url}
+                </span>
               </li>
             ))}
           </ul>
           {probes.some((p) => p.state === "failed") && (
             <p className="mt-3 text-sm text-[var(--incorrect)]">
-              A recording could not be loaded. Check the URL is reachable and allows cross-origin
-              playback.
+              A recording could not be loaded. Check the URL is reachable and
+              allows cross-origin playback.
             </p>
           )}
         </section>
@@ -254,7 +293,10 @@ export function SetupPage({ type }: { type: TestType }) {
           <h2 className="text-lg font-semibold">{test.title}</h2>
           <dl className="mt-3 grid grid-cols-3 gap-4 text-sm">
             <Stat label="Questions" value={String(summary.count)} />
-            <Stat label={test.type === "reading" ? "Passages" : "Parts"} value={String(summary.parts)} />
+            <Stat
+              label={test.type === "reading" ? "Passages" : "Parts"}
+              value={String(summary.parts)}
+            />
             <Stat label="Time" value={summary.duration} />
           </dl>
         </section>
@@ -285,7 +327,13 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function IssueList({ title, issues }: { title: string; issues: ValidationIssue[] }) {
+function IssueList({
+  title,
+  issues,
+}: {
+  title: string;
+  issues: ValidationIssue[];
+}) {
   if (issues.length === 0) return null;
   const errors = issues.filter((i) => i.level === "error");
   const warnings = issues.filter((i) => i.level === "warning");
@@ -300,7 +348,10 @@ function IssueList({ title, issues }: { title: string; issues: ValidationIssue[]
         .filter((g) => g.list.length > 0)
         .map((g) => (
           <div key={g.word} className="mt-3">
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: g.tone }}>
+            <p
+              className="text-xs font-semibold uppercase tracking-wide"
+              style={{ color: g.tone }}
+            >
               {g.word} ({g.list.length})
             </p>
             <ul className="mt-1.5 space-y-1 text-sm">

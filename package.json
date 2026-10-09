@@ -1,6 +1,6 @@
 {
   "name": "ielts-on-computer",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Practice harness for the computer-delivered IELTS Listening and Academic Reading tests.",
   "author": "Asrafuzzaman Khan Nahin",
   "license": "MIT",
@@ -8,24 +8,42 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "node scripts/serve.mjs",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "postinstall": "node scripts/copy-workers.mjs",
+    "test:e2e": "playwright test",
+    "build:mac": "zsh scripts/build-mac.sh"
   },
   "dependencies": {
-    "next": "16.3.3",
+    "@tauri-apps/api": "^2.12.2",
+    "@tauri-apps/plugin-dialog": "^2.8.1",
+    "@tauri-apps/plugin-fs": "^2.6.0",
+    "fflate": "^0.8.3",
+    "idb": "^8.0.4",
+    "mammoth": "^1.13.0",
+    "next": "^16.4.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "^4.4.3",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@tauri-apps/cli": "^2.12.1",
+    "@types/node": "^24.19.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.3",
+    "eslint-config-next": "^16.4.0",
+    "fake-indexeddb": "^6.2.5",
+    "prettier": "^3.9.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.3"
   }
 }

@@ -1,4 +1,5 @@
 "use client";
+import { AnnotatedText } from "./AnnotatedText";
 
 import { useTestStore } from "@/lib/store";
 
@@ -14,13 +15,23 @@ export function FlagButton({ n }: { n: number }) {
       type="button"
       onClick={() => toggleFlag(n)}
       aria-pressed={flagged}
-      title={flagged ? `Remove flag from question ${n}` : `Flag question ${n} to review later`}
+      title={
+        flagged
+          ? `Remove flag from question ${n}`
+          : `Flag question ${n} to review later`
+      }
       className="shrink-0 rounded p-1 leading-none"
     >
       <span className="sr-only">
         {flagged ? `Remove flag from question ${n}` : `Flag question ${n}`}
       </span>
-      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden focusable="false">
+      <svg
+        viewBox="0 0 16 16"
+        width="16"
+        height="16"
+        aria-hidden
+        focusable="false"
+      >
         <path
           d="M3.5 1v14"
           stroke="currentColor"
@@ -57,7 +68,11 @@ export function QuestionShell({
           {n}
         </span>
         <div className="min-w-0 flex-1">
-          {prompt && <p className="leading-relaxed">{prompt}</p>}
+          {prompt && (
+            <p className="leading-relaxed">
+              <AnnotatedText text={prompt} scope={`q-${n}`} />
+            </p>
+          )}
           {children}
         </div>
         <FlagButton n={n} />
@@ -92,9 +107,17 @@ export function GapInput({
   const answer = useTestStore((s) => s.answer);
 
   return (
-    <span className={inline ? "inline-flex items-baseline gap-1.5" : "flex items-baseline gap-2"}>
+    <span
+      className={
+        inline
+          ? "inline-flex items-baseline gap-1.5"
+          : "flex items-baseline gap-2"
+      }
+    >
       {inline && (
-        <span className="rounded bg-[var(--bg-panel)] px-1.5 font-bold tabular-nums">{n}</span>
+        <span className="rounded bg-[var(--bg-panel)] px-1.5 font-bold tabular-nums">
+          {n}
+        </span>
       )}
       <input
         type="text"

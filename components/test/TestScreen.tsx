@@ -7,7 +7,10 @@ import { useCountdown, formatClock } from "@/lib/useTimer";
 import { useFullscreen } from "@/lib/useFullscreen";
 import { answeredSet, navEntries } from "@/lib/progress";
 import { GroupView } from "@/components/questions/GroupView";
-import { AudioRunner, VolumeControl } from "./AudioRunner";
+import { AudioRunner } from "./AudioRunner";
+import { useNotePanel } from "@/lib/annotationUI";
+import { SaveStatus } from "@/components/SaveStatus";
+import { nextQuestion } from "@/question/navigation";
 import { Modal } from "./Modal";
 import { NavBar } from "./NavBar";
 import { NotesButton, NotesPanel } from "./NotesPanel";
@@ -28,9 +31,11 @@ export function TestScreen() {
 
   const { isFullscreen, supported, enter } = useFullscreen();
 
+  const [showAnswers, setShowAnswers] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
-  const [openNote, setOpenNote] = useState<string | null>(null);
+  const openNote = useNotePanel((s) => s.openId);
+  const setOpenNote = useNotePanel((s) => s.open);
   const questionsRef = useRef<HTMLDivElement>(null);
 
   const test = session?.test ?? null;
@@ -46,7 +51,10 @@ export function TestScreen() {
   }, [test, enter]);
 
   const onExpire = useCallback(() => submit("time"), [submit]);
-  const remaining = useCountdown(session?.endsAt ?? null, onExpire);
+  const remaining = useCountdown(
+    session?.pausedAt || session?.untimed ? null : (session?.endsAt ?? null),
+    onExpire,
+  );
 
   useEffect(() => {
     // Wait for the stored session to be read back, or a refresh mid-test
@@ -57,17 +65,22 @@ export function TestScreen() {
   }, [hydrated, phase, router]);
 
   const answered = useMemo(
-    () => (test ? answeredSet(test, session?.responses ?? NO_RESPONSES) : new Set<number>()),
+    () =>
+      test
+        ? answeredSet(test, session?.responses ?? NO_RESPONSES)
+        : new Set<number>(),
     [test, session?.responses],
   );
   const unanswered = useMemo(
-    () => (test ? navEntries(test).filter((e) => !answered.has(e.n)).length : 0),
+    () =>
+      test ? navEntries(test).filter((e) => !answered.has(e.n)).length : 0,
     [test, answered],
   );
 
   const goTo = useCallback(
     (n: number, part: number) => {
       setActivePart(part);
+      useTestStore.getState().setCurrentQuestion(n);
       // The part switch renders first; scroll on the next frame.
       requestAnimationFrame(() => {
         document.getElementById(`q-${n}`)?.scrollIntoView({ block: "center" });
@@ -76,14 +89,51 @@ export function TestScreen() {
     [setActivePart],
   );
 
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        !event.altKey ||
+        /INPUT|TEXTAREA|SELECT/.test(target.tagName) ||
+        target.isContentEditable
+      )
+        return;
+      const current = useTestStore.getState().session;
+      if (!current) return;
+      if (event.code === "KeyF") {
+        event.preventDefault();
+        useTestStore.getState().toggleFlag(current.currentQuestion);
+      }
+      if (event.code === "KeyN" || event.code === "KeyP") {
+        event.preventDefault();
+        const e = nextQuestion(
+          current.test,
+          current.currentQuestion,
+          event.code === "KeyN" ? 1 : -1,
+        );
+        goTo(e.n, e.part);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goTo]);
+
   if (!session || !test) return null;
 
   const activePart =
     test.parts.find((p) => p.part === session.activePart) ?? test.parts[0];
-  const warning = remaining <= WARNING_AT;
+  const warning =
+    !session.untimed && !session.pausedAt && remaining <= WARNING_AT;
 
   const questionsPane = (
-    <div ref={questionsRef} className="h-full overflow-y-auto px-6 py-5">
+    <div
+      ref={questionsRef}
+      onFocusCapture={(e) => {
+        const id = (e.target as HTMLElement).closest('[id^="q-"]')?.id;
+        if (id) useTestStore.getState().setCurrentQuestion(Number(id.slice(2)));
+      }}
+      className="h-full overflow-y-auto px-6 py-5"
+    >
       {activePart.instructions && (
         <div className="mb-5 whitespace-pre-line border border-[var(--border-strong)] bg-[var(--bg-panel)] px-4 py-3 font-medium leading-relaxed">
           {activePart.instructions}
@@ -106,7 +156,11 @@ export function TestScreen() {
           color: warning ? "var(--warn-fg)" : "inherit",
         }}
       >
-        <h1 className="min-w-0 truncate text-sm font-semibold">{test.title}</h1>
+        <strong className="brand">IELTS</strong>
+        <h1 className="min-w-0 truncate text-sm font-semibold">
+          {test.type.toUpperCase()} · Part {session.activePart}
+        </h1>
+        <SaveStatus />
 
         <div className="ml-auto flex items-center gap-3">
           <div
@@ -118,11 +172,35 @@ export function TestScreen() {
             <span className="text-xs uppercase tracking-wide">
               {warning ? "1 minute left" : "Time remaining"}
             </span>{" "}
-            <span className="text-lg font-bold">{formatClock(remaining)}</span>
+            <span className="text-lg font-bold">
+              {session.untimed
+                ? "Untimed"
+                : session.pausedAt
+                  ? "Paused"
+                  : formatClock(remaining)}
+            </span>
           </div>
 
-          {test.type === "reading" && <NotesButton onClick={() => setOpenNote(openNote ?? firstNoteId())} />}
+          <NotesButton onClick={() => setOpenNote(openNote ?? firstNoteId())} />
+          <button
+            title="Create a general note"
+            onClick={() =>
+              setOpenNote(useTestStore.getState().addNoteRange(-1, -1))
+            }
+          >
+            New note
+          </button>
 
+          {session.mode === "practice" && (
+            <>
+              <button onClick={() => useTestStore.getState().togglePause()}>
+                {session.pausedAt ? "Resume" : "Pause"}
+              </button>
+              <button onClick={() => setShowAnswers(!showAnswers)}>
+                Answers
+              </button>
+            </>
+          )}
           <OptionsMenu
             onShowInstructions={() => setShowInstructions(true)}
             onSubmit={() => setConfirmSubmit(true)}
@@ -143,10 +221,33 @@ export function TestScreen() {
         </div>
       )}
 
+      {showAnswers && session.mode === "practice" && (
+        <div className="notice">
+          {Object.entries(session.key.answers).map(([n, a]) => (
+            <span key={n} className="mr-4">
+              {n}: {Array.isArray(a) ? a.join(" / ") : a}
+            </span>
+          ))}
+        </div>
+      )}
+      {session.pausedAt && (
+        <div className="pause-cover">
+          Practice paused.{" "}
+          <button onClick={() => useTestStore.getState().togglePause()}>
+            Resume
+          </button>
+        </div>
+      )}
       {test.type === "reading" && activePart.passage ? (
         <div className="flex min-h-0 flex-1">
           <SplitPane
-            left={<Passage passage={activePart.passage} onOpenNote={setOpenNote} />}
+            left={
+              <Passage
+                key={activePart.part}
+                passage={activePart.passage}
+                onOpenNote={setOpenNote}
+              />
+            }
             right={questionsPane}
           />
           <NotesPanel
@@ -156,7 +257,16 @@ export function TestScreen() {
           />
         </div>
       ) : (
-        <div className="mx-auto min-h-0 w-full max-w-3xl flex-1">{questionsPane}</div>
+        <div className="flex min-h-0 flex-1">
+          <div className="mx-auto min-h-0 w-full max-w-3xl flex-1">
+            {questionsPane}
+          </div>
+          <NotesPanel
+            openId={openNote}
+            onClose={() => setOpenNote(null)}
+            onSelect={setOpenNote}
+          />
+        </div>
       )}
 
       <NavBar test={test} onGoTo={goTo} />
@@ -164,16 +274,17 @@ export function TestScreen() {
       {test.type === "listening" && (
         <>
           <AudioRunner test={test} />
-          <div className="pointer-events-auto fixed bottom-16 right-4 z-40">
-            <VolumeControl />
-          </div>
         </>
       )}
 
       {showInstructions && (
-        <Modal title="Test Instructions" onClose={() => setShowInstructions(false)}>
+        <Modal
+          title="Test Instructions"
+          onClose={() => setShowInstructions(false)}
+        >
           <p className="whitespace-pre-line leading-relaxed">
-            {test.instructions ?? "No instructions were supplied with this test file."}
+            {test.instructions ??
+              "No instructions were supplied with this test file."}
           </p>
         </Modal>
       )}
@@ -207,7 +318,8 @@ export function TestScreen() {
               : "All questions are answered."}
           </p>
           <p className="mt-3 text-sm text-[var(--muted)]">
-            You will see your score and a full answer review. This cannot be undone.
+            Your answers will be saved. A full mock continues to the next
+            section; scores are revealed only after Writing.
           </p>
         </Modal>
       )}

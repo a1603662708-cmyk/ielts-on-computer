@@ -21,6 +21,7 @@ export type TokenizedParagraph = {
 };
 
 export type Annotation = {
+  part?: number;
   id: string;
   /** Inclusive word-index range. */
   start: number;
@@ -83,7 +84,11 @@ function firstIndexWithin(node: Node, backwards: boolean): number | null {
  * on the *parent* with a child offset. The last case is why this can't just
  * walk upwards: it has to look down at `childNodes[offset]` first.
  */
-function wordIndexOf(node: Node | null, offset: number, backwards: boolean): number | null {
+function wordIndexOf(
+  node: Node | null,
+  offset: number,
+  backwards: boolean,
+): number | null {
   if (!node) return null;
 
   if (node.nodeType === Node.ELEMENT_NODE) {
@@ -96,7 +101,9 @@ function wordIndexOf(node: Node | null, offset: number, backwards: boolean): num
       const inside = firstIndexWithin(child, backwards);
       if (inside !== null) return inside;
       const viaParent = indexOfElement(
-        child.nodeType === Node.ELEMENT_NODE ? (child as Element) : child.parentElement,
+        child.nodeType === Node.ELEMENT_NODE
+          ? (child as Element)
+          : child.parentElement,
       );
       if (viaParent !== null) return viaParent;
     }
@@ -113,7 +120,9 @@ export type SelectionRange = { start: number; end: number; rect: DOMRect };
  * Returns null when nothing useful is selected or the selection escapes
  * the passage container.
  */
-export function readSelection(container: HTMLElement | null): SelectionRange | null {
+export function readSelection(
+  container: HTMLElement | null,
+): SelectionRange | null {
   if (!container) return null;
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed || sel.rangeCount === 0) return null;
@@ -164,16 +173,25 @@ export function addHighlight(
 }
 
 /** Removes whichever highlight covers `index`. */
-export function removeHighlightAt(existing: Annotation[], index: number): Annotation[] {
+export function removeHighlightAt(
+  existing: Annotation[],
+  index: number,
+): Annotation[] {
   return existing.filter((a) => index < a.start || index > a.end);
 }
 
-export function annotationAt<T extends Annotation>(list: T[], index: number): T | undefined {
+export function annotationAt<T extends Annotation>(
+  list: T[],
+  index: number,
+): T | undefined {
   return list.find((a) => index >= a.start && index <= a.end);
 }
 
 /** Every annotation covering `index` — notes may stack. */
-export function annotationsAt<T extends Annotation>(list: T[], index: number): T[] {
+export function annotationsAt<T extends Annotation>(
+  list: T[],
+  index: number,
+): T[] {
   return list.filter((a) => index >= a.start && index <= a.end);
 }
 

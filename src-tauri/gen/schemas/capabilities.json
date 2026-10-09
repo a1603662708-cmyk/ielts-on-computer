@@ -1,0 +1,1 @@
+{"main":{"identifier":"main","description":"Local exam window; save exported files only through user-selected save dialogs.","local":true,"windows":["main"],"permissions":["core:default","core:window:allow-set-fullscreen","dialog:allow-save","fs:allow-write-file"]}}

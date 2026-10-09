@@ -13,7 +13,9 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   const textSize = useTestStore((s) => s.textSize);
 
   useEffect(() => {
-    hydrateStore();
+    void hydrateStore();
+    const id = setInterval(() => useTestStore.getState().checkpoint(), 5000);
+    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {

@@ -37,31 +37,18 @@ export type ScoreReport = {
  * Normalisation
  * ------------------------------------------------------------------------- */
 
-/** Loose comparison form: case, whitespace, quotes, dashes, trailing period. */
-function normalise(value: string): string {
-  return value
-    .normalize("NFKC")
-    .replace(/[‘’ʼ]/g, "'")
-    .replace(/[“”]/g, '"')
-    .replace(/[‐-―]/g, "-")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/[.,;:!?]+$/, "")
-    .toLowerCase();
+function normalise(
+  value: string,
+  options?: AnswerKey["normalization"],
+): string {
+  let result = value;
+  if (options?.trimWhitespace !== false)
+    result = result.replace(/\s+/g, " ").trim();
+  if (options?.caseInsensitive !== false) result = result.toLowerCase();
+  return result;
 }
-
-/** Strict form: exactly what the key says, only whitespace-normalised. */
 function strict(value: string): string {
-  return value.replace(/\s+/g, " ").trim();
-}
-
-/**
- * IELTS accepts an answer with or without a leading article when the article
- * is not part of the tested phrase, so `art gallery` and `the art gallery`
- * both pass. Only applied in the loose pass.
- */
-function stripArticle(value: string): string {
-  return value.replace(/^(a|an|the)\s+/, "");
+  return value;
 }
 
 /**
@@ -76,28 +63,22 @@ function accepted(key: string | string[] | undefined): string[] {
     .filter((s) => s.length > 0);
 }
 
-function matches(given: string, candidates: string[]): { hit: boolean; lenient: boolean } {
+function matches(
+  given: string,
+  candidates: string[],
+  options?: AnswerKey["normalization"],
+): { hit: boolean; lenient: boolean } {
   const g = strict(given);
-  if (g.length === 0) return { hit: false, lenient: false };
+  if (g.trim().length === 0) return { hit: false, lenient: false };
 
   if (candidates.some((c) => c === g)) return { hit: true, lenient: false };
 
-  const gn = normalise(g);
-  const gna = stripArticle(gn);
+  const gn = normalise(g, options);
   for (const c of candidates) {
-    const cn = normalise(c);
-    if (cn === gn || stripArticle(cn) === gna) return { hit: true, lenient: true };
+    const cn = normalise(c, options);
+    if (cn === gn) return { hit: true, lenient: true };
   }
   return { hit: false, lenient: false };
-}
-
-/** Set comparison for "choose TWO letters" groups. Order-insensitive. */
-function matchesSet(given: string[], candidates: string[]): boolean {
-  const g = new Set(given.map(normalise).filter(Boolean));
-  const c = new Set(candidates.map(normalise));
-  if (g.size !== c.size) return false;
-  for (const item of g) if (!c.has(item)) return false;
-  return true;
 }
 
 /* ---------------------------------------------------------------------------
@@ -114,7 +95,11 @@ function displayExpected(key: string | string[] | undefined): string {
   return Array.isArray(key) ? key.join(" / ") : key;
 }
 
-export function score(test: Test, key: AnswerKey, responses: ResponseMap): ScoreReport {
+export function score(
+  test: Test,
+  key: AnswerKey,
+  responses: ResponseMap,
+): ScoreReport {
   const questions: QuestionResult[] = [];
 
   for (const part of test.parts) {
@@ -125,18 +110,52 @@ export function score(test: Test, key: AnswerKey, responses: ResponseMap): Score
         // The whole group is one selection graded across its question numbers.
         const given = responses[numbers[0]];
         const selected = Array.isArray(given) ? given : given ? [given] : [];
-        const expectedAll = numbers.flatMap((n) => accepted(key.answers[String(n)]));
-        const ok = expectedAll.length > 0 && matchesSet(selected, expectedAll);
+        const pool = [
+          ...new Set(
+            selected
+              .slice(0, group.pick)
+              .map((s) => normalise(s, key.normalization)),
+          ),
+        ];
+        const candidates = numbers.map((n) =>
+          accepted(key.answers[String(n)]).map((a) =>
+            normalise(a, key.normalization),
+          ),
+        );
+        // Maximum matching avoids losing a mark when accepted alternatives overlap.
+        const owner = new Map<number, number>();
+        function assign(question: number, visited: Set<number>): boolean {
+          for (let choice = 0; choice < pool.length; choice++) {
+            if (
+              visited.has(choice) ||
+              !candidates[question].includes(pool[choice])
+            )
+              continue;
+            visited.add(choice);
+            const previous = owner.get(choice);
+            if (previous === undefined || assign(previous, visited)) {
+              owner.set(choice, question);
+              return true;
+            }
+          }
+          return false;
+        }
+        numbers.forEach((_, i) => assign(i, new Set()));
+        const matched = numbers.map((_, i) => {
+          const choice = [...owner].find(([, q]) => q === i)?.[0];
+          return choice === undefined ? undefined : pool[choice];
+        });
+        const unused = pool.filter((_, i) => !owner.has(i));
 
         numbers.forEach((n, i) => {
           questions.push({
             n,
             part: part.part,
             groupType: group.type,
-            given: selected[i] ?? (i === 0 ? selected.join(", ") : ""),
-            expected: expectedAll[i] ?? "—",
-            // All-or-nothing: the set is right or it isn't.
-            correct: ok,
+            given: matched[i] ?? unused.shift() ?? "",
+            expected: displayExpected(key.answers[String(n)]),
+            // One mark per matched answer; no duplicate selection can score twice.
+            correct: matched[i] !== undefined,
             lenient: false,
             blank: selected.length === 0,
           });
@@ -148,7 +167,7 @@ export function score(test: Test, key: AnswerKey, responses: ResponseMap): Score
         const raw = responses[n];
         const given = displayGiven(raw);
         const candidates = accepted(key.answers[String(n)]);
-        const { hit, lenient } = matches(given, candidates);
+        const { hit, lenient } = matches(given, candidates, key.normalization);
 
         questions.push({
           n,

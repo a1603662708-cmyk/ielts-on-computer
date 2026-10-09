@@ -1,0 +1,12 @@
+Part 1. Visitor booking. This is an original demonstration recording. Listen and complete the notes.
+Family name: Morgan.
+Number of guests: four.
+Arrival month: June.
+Room type: twin.
+Nights requested: three.
+Breakfast time: eight.
+Transport: train.
+Dietary requirement: vegetarian.
+Deposit amount: fifty.
+Booking reference: 6382.
+That is the end of this part.

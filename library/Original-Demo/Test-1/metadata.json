@@ -1,0 +1,739 @@
+{
+  "formatVersion": 2,
+  "id": "original-demo",
+  "book": "Original Demo",
+  "test": 1,
+  "module": "Academic",
+  "title": "A complete interface demonstration",
+  "createdAt": 1791532800000,
+  "sections": {
+    "reading": {
+      "paper": {
+        "formatVersion": 1,
+        "type": "reading",
+        "title": "Original demonstration \u2014 Academic Reading",
+        "durationSeconds": 3600,
+        "instructions": "This is a short demonstration test, not a real IELTS paper. It exists to show every question type the app supports.\n\nYou should answer all 12 questions. Read the instructions for each set carefully and observe any word limit given.\n\nYou can change your answers at any time before the test ends.",
+        "parts": [
+          {
+            "part": 1,
+            "heading": "Reading Passage 1",
+            "instructions": "You should spend about 15 minutes on Questions 1\u201312, which are based on Reading Passage 1 below.",
+            "passage": {
+              "title": "The Lighthouse Keepers",
+              "subtitle": "For three centuries a scattered profession kept the coastlines lit. Then, within a single generation, it disappeared almost entirely.",
+              "paragraphs": [
+                {
+                  "label": "A",
+                  "text": "The job of the lighthouse keeper was, for most of its history, defined less by heroism than by repetition. A keeper trimmed wicks, polished lenses, wound the clockwork that turned the light, and recorded the weather in a logbook at fixed hours. The work was exacting rather than difficult, and its central demand was consistency: a light that failed for even an hour could undo the reputation of a station built over decades."
+                },
+                {
+                  "label": "B",
+                  "text": "Isolation shaped the profession more than any other factor. Offshore towers, known in the service as rock stations, might be supplied only every few weeks, and in poor weather a relief boat could be delayed for months. Keepers at such postings worked in teams of three, an arrangement adopted after an incident in which a keeper died and his sole companion, fearing an accusation of murder, kept the body on the gallery until the relief arrived. Three men meant that no one was ever alone with a corpse, or with a decision."
+                },
+                {
+                  "label": "C",
+                  "text": "Onshore stations were a different life entirely. Families lived alongside the keeper, children walked to village schools, and gardens were cultivated in the lee of the tower. The service encouraged this: a keeper with a household nearby was thought less likely to abandon a difficult posting. Pay was modest but the accommodation was free, and the position carried a respectability out of proportion to its salary."
+                },
+                {
+                  "label": "D",
+                  "text": "Technology eroded the profession gradually and then all at once. Clockwork mechanisms gave way to electric motors, oil lamps to sealed-beam bulbs, and manual weather observation to automatic instruments. Each change removed a task. By the middle of the twentieth century a keeper's duties had contracted to little more than supervision, and supervision is precisely what a telemetry link can provide from a distance."
+                },
+                {
+                  "label": "E",
+                  "text": "The final wave of automation was swift. Britain removed its last resident keepers in 1998; Canada, unusually, retained staffed stations on parts of its western coast into the present century, arguing that keepers provided weather reports and rescue assistance that machines could not. That argument has never been fully settled. Automated lights are cheaper and, by most measures, no less reliable, but they cannot see a small boat in trouble and report it."
+                },
+                {
+                  "label": "F",
+                  "text": "What has survived is the architecture. Towers that were built to be functional are now protected as heritage, and a surprising number have been converted into accommodation for visitors who pay for precisely the isolation that keepers once endured as a condition of employment. The lens rooms, stripped of their original optics, are the most photographed rooms in the buildings."
+                }
+              ]
+            },
+            "groups": [
+              {
+                "type": "matching",
+                "instructions": "Reading Passage 1 has six paragraphs, A\u2013F.\n\nChoose the correct heading for paragraphs B, C and E from the list of headings below.",
+                "optionsTitle": "List of Headings",
+                "options": [
+                  {
+                    "key": "i",
+                    "text": "A debate that remains open"
+                  },
+                  {
+                    "key": "ii",
+                    "text": "Domestic life at the tower"
+                  },
+                  {
+                    "key": "iii",
+                    "text": "The buildings outlive the profession"
+                  },
+                  {
+                    "key": "iv",
+                    "text": "Why three was the required number"
+                  },
+                  {
+                    "key": "v",
+                    "text": "The cost of building offshore"
+                  },
+                  {
+                    "key": "vi",
+                    "text": "Routine as the core of the work"
+                  }
+                ],
+                "examples": [
+                  {
+                    "prompt": "Paragraph A",
+                    "key": "vi"
+                  }
+                ],
+                "questions": [
+                  {
+                    "n": 1,
+                    "prompt": "Paragraph B"
+                  },
+                  {
+                    "n": 2,
+                    "prompt": "Paragraph C"
+                  },
+                  {
+                    "n": 3,
+                    "prompt": "Paragraph E"
+                  }
+                ]
+              },
+              {
+                "type": "tf-ng",
+                "instructions": "Do the following statements agree with the information given in Reading Passage 1?\n\nTRUE if the statement agrees with the information\nFALSE if the statement contradicts the information\nNOT GIVEN if there is no information on this",
+                "questions": [
+                  {
+                    "n": 4,
+                    "prompt": "Rock stations were staffed by three keepers because of an earlier incident involving a death."
+                  },
+                  {
+                    "n": 5,
+                    "prompt": "Lighthouse keepers were among the highest-paid public servants of their era."
+                  },
+                  {
+                    "n": 6,
+                    "prompt": "Canada kept staffed lighthouses in service later than Britain did."
+                  }
+                ]
+              },
+              {
+                "type": "gap",
+                "instructions": "Complete the notes below.",
+                "limit": "NO MORE THAN TWO WORDS from the passage",
+                "body": {
+                  "kind": "notes",
+                  "heading": "Decline of the profession",
+                  "items": [
+                    {
+                      "text": "Each technological change removed a task:",
+                      "indent": 0
+                    },
+                    {
+                      "text": "{{7}} mechanisms replaced by electric motors",
+                      "indent": 1
+                    },
+                    {
+                      "text": "Manual weather observation replaced by automatic {{8}}",
+                      "indent": 1
+                    },
+                    {
+                      "text": "Britain removed its last resident keepers in {{9}}",
+                      "indent": 0
+                    }
+                  ]
+                },
+                "questions": [
+                  {
+                    "n": 7
+                  },
+                  {
+                    "n": 8
+                  },
+                  {
+                    "n": 9
+                  }
+                ]
+              },
+              {
+                "type": "mcq",
+                "instructions": "Choose the correct letter, A, B, C or D.",
+                "questions": [
+                  {
+                    "n": 10,
+                    "prompt": "The writer suggests that the central skill required of a keeper was",
+                    "options": [
+                      "physical courage in bad weather.",
+                      "reliability over long periods.",
+                      "mechanical expertise.",
+                      "the ability to work alone."
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "mcq-multi",
+                "instructions": "Choose TWO letters, A\u2013E.",
+                "prompt": "Which TWO reasons does the writer give for retaining human keepers?",
+                "options": [
+                  "They cost less than automated systems",
+                  "They can supply weather reports",
+                  "They can spot and report vessels in difficulty",
+                  "They maintain the heritage value of the buildings",
+                  "They are more reliable than automated lights"
+                ],
+                "pick": 2,
+                "range": [
+                  11,
+                  12
+                ]
+              }
+            ]
+          },
+          {
+            "part": 2,
+            "passage": {
+              "title": "A community seed library",
+              "paragraphs": [
+                {
+                  "text": "The community seed library opened in March. Its seed drawers are kept in the public library. Green packets contain vegetables, while blue packets contain flowers. Visitors may borrow three packets at a time. Members record the sowing date in a shared notebook. Volunteers teach monthly workshops in the annex. Beans have proved the most popular crop. Gardeners use netting to protect young plants from birds and wood to make reusable labels. Staff check stock weekly. After the harvest, members return seeds from healthy plants. Membership is free and spring is the busiest season."
+                }
+              ]
+            },
+            "groups": [
+              {
+                "type": "gap",
+                "questionType": "short-answer",
+                "limit": "NO MORE THAN TWO WORDS AND/OR A NUMBER",
+                "questions": [
+                  {
+                    "n": 13,
+                    "prompt": "The project began in which month?"
+                  },
+                  {
+                    "n": 14,
+                    "prompt": "Where are the seed drawers kept?"
+                  },
+                  {
+                    "n": 15,
+                    "prompt": "Which colour identifies vegetable packets?"
+                  },
+                  {
+                    "n": 16,
+                    "prompt": "How many packets can each visitor borrow?"
+                  },
+                  {
+                    "n": 17,
+                    "prompt": "What must members record before sowing?"
+                  },
+                  {
+                    "n": 18,
+                    "prompt": "Who teaches the monthly workshops?"
+                  },
+                  {
+                    "n": 19,
+                    "prompt": "Which crop was the most popular?"
+                  },
+                  {
+                    "n": 20,
+                    "prompt": "What protects seedlings from birds?"
+                  },
+                  {
+                    "n": 21,
+                    "prompt": "Which material is used for labels?"
+                  },
+                  {
+                    "n": 22,
+                    "prompt": "How often are stock levels checked?"
+                  },
+                  {
+                    "n": 23,
+                    "prompt": "What do members return after harvesting?"
+                  },
+                  {
+                    "n": 24,
+                    "prompt": "Which room hosts the workshops?"
+                  },
+                  {
+                    "n": 25,
+                    "prompt": "What is the annual membership cost?"
+                  },
+                  {
+                    "n": 26,
+                    "prompt": "Which season is the busiest?"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "part": 3,
+            "passage": {
+              "title": "A coastal research station",
+              "paragraphs": [
+                {
+                  "text": "The coastal research station opened in 2014. Its outer walls are timber. Large windows face south. Solar panels generate most of the electricity, and batteries store the surplus. Six permanent researchers live on site. Each morning they monitor seabirds on the cliffs. Sensors measure water temperature and staff collect water samples daily. A ferry carries these samples to the mainland. The laboratory is kept at a constant temperature. Visiting school groups may use microscopes to examine specimens. November is reserved for maintenance, so the station is closed to visitors. Climate is the principal research topic."
+                }
+              ]
+            },
+            "groups": [
+              {
+                "type": "gap",
+                "questionType": "short-answer",
+                "limit": "NO MORE THAN TWO WORDS AND/OR A NUMBER",
+                "questions": [
+                  {
+                    "n": 27,
+                    "prompt": "In what year did the station open?"
+                  },
+                  {
+                    "n": 28,
+                    "prompt": "Which material forms its outer walls?"
+                  },
+                  {
+                    "n": 29,
+                    "prompt": "Which direction do its largest windows face?"
+                  },
+                  {
+                    "n": 30,
+                    "prompt": "What generates most of its electricity?"
+                  },
+                  {
+                    "n": 31,
+                    "prompt": "What stores surplus electricity?"
+                  },
+                  {
+                    "n": 32,
+                    "prompt": "How many permanent researchers work there?"
+                  },
+                  {
+                    "n": 33,
+                    "prompt": "Which animals are monitored each morning?"
+                  },
+                  {
+                    "n": 34,
+                    "prompt": "What measures the water temperature?"
+                  },
+                  {
+                    "n": 35,
+                    "prompt": "How often is the water sampled?"
+                  },
+                  {
+                    "n": 36,
+                    "prompt": "What carries samples to the mainland?"
+                  },
+                  {
+                    "n": 37,
+                    "prompt": "Which room is kept at a constant temperature?"
+                  },
+                  {
+                    "n": 38,
+                    "prompt": "What may school groups use to view specimens?"
+                  },
+                  {
+                    "n": 39,
+                    "prompt": "Which month is reserved for maintenance?"
+                  },
+                  {
+                    "n": 40,
+                    "prompt": "What is the principal research topic?"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "key": {
+        "formatVersion": 1,
+        "title": "Demo Reading \u2014 The Lighthouse Keepers",
+        "answers": {
+          "1": "iv",
+          "2": "ii",
+          "3": "i",
+          "4": "TRUE",
+          "5": "FALSE",
+          "6": "TRUE",
+          "7": "Clockwork",
+          "8": "instruments",
+          "9": "1998",
+          "10": "B",
+          "11": "B",
+          "12": "C",
+          "13": "March",
+          "14": "library",
+          "15": "green",
+          "16": "three",
+          "17": "date",
+          "18": "volunteers",
+          "19": "beans",
+          "20": "netting",
+          "21": "wood",
+          "22": "weekly",
+          "23": "seeds",
+          "24": "annex",
+          "25": "free",
+          "26": "spring",
+          "27": "2014",
+          "28": "timber",
+          "29": "south",
+          "30": "solar panels",
+          "31": "batteries",
+          "32": "six",
+          "33": "seabirds",
+          "34": "sensors",
+          "35": "daily",
+          "36": "ferry",
+          "37": "laboratory",
+          "38": "microscopes",
+          "39": "November",
+          "40": "climate"
+        }
+      }
+    },
+    "listening": {
+      "paper": {
+        "formatVersion": 1,
+        "title": "Original demonstration \u2014 Listening",
+        "type": "listening",
+        "durationSeconds": 1920,
+        "instructions": "Original short demonstration recordings. This is a functional demo, not a full-length IELTS paper. Write ONE WORD AND/OR A NUMBER.",
+        "audio": [
+          {
+            "part": 1,
+            "url": "/demo/part1.m4a"
+          },
+          {
+            "part": 2,
+            "url": "/demo/part2.m4a"
+          },
+          {
+            "part": 3,
+            "url": "/demo/part3.m4a"
+          },
+          {
+            "part": 4,
+            "url": "/demo/part4.m4a"
+          }
+        ],
+        "parts": [
+          {
+            "part": 1,
+            "heading": "Visitor booking",
+            "groups": [
+              {
+                "type": "gap",
+                "questionType": "note-completion",
+                "intro": "Visitor booking",
+                "limit": "ONE WORD AND/OR A NUMBER",
+                "body": {
+                  "kind": "text",
+                  "lines": [
+                    "Family name: {{1}}",
+                    "Number of guests: {{2}}",
+                    "Arrival month: {{3}}",
+                    "Room type: {{4}}",
+                    "Nights requested: {{5}}",
+                    "Breakfast time: {{6}}",
+                    "Transport: {{7}}",
+                    "Dietary requirement: {{8}}",
+                    "Deposit amount: {{9}}",
+                    "Booking reference: {{10}}"
+                  ]
+                },
+                "questions": [
+                  {
+                    "n": 1
+                  },
+                  {
+                    "n": 2
+                  },
+                  {
+                    "n": 3
+                  },
+                  {
+                    "n": 4
+                  },
+                  {
+                    "n": 5
+                  },
+                  {
+                    "n": 6
+                  },
+                  {
+                    "n": 7
+                  },
+                  {
+                    "n": 8
+                  },
+                  {
+                    "n": 9
+                  },
+                  {
+                    "n": 10
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "part": 2,
+            "heading": "Museum visit",
+            "groups": [
+              {
+                "type": "gap",
+                "questionType": "note-completion",
+                "intro": "Museum visit",
+                "limit": "ONE WORD AND/OR A NUMBER",
+                "body": {
+                  "kind": "text",
+                  "lines": [
+                    "Opening time: {{11}}",
+                    "Closing time: {{12}}",
+                    "Closed day: {{13}}",
+                    "Adult ticket price: {{14}}",
+                    "Student ticket price: {{15}}",
+                    "Main exhibition theme: {{16}}",
+                    "Cafe location: {{17}}",
+                    "Meeting point: {{18}}",
+                    "Tour length in minutes: {{19}}",
+                    "Guide name: {{20}}"
+                  ]
+                },
+                "questions": [
+                  {
+                    "n": 11
+                  },
+                  {
+                    "n": 12
+                  },
+                  {
+                    "n": 13
+                  },
+                  {
+                    "n": 14
+                  },
+                  {
+                    "n": 15
+                  },
+                  {
+                    "n": 16
+                  },
+                  {
+                    "n": 17
+                  },
+                  {
+                    "n": 18
+                  },
+                  {
+                    "n": 19
+                  },
+                  {
+                    "n": 20
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "part": 3,
+            "heading": "Student project",
+            "groups": [
+              {
+                "type": "gap",
+                "questionType": "note-completion",
+                "intro": "Student project",
+                "limit": "ONE WORD AND/OR A NUMBER",
+                "body": {
+                  "kind": "text",
+                  "lines": [
+                    "Project topic: {{21}}",
+                    "Team size: {{22}}",
+                    "Survey location: {{23}}",
+                    "Participants needed: {{24}}",
+                    "Deadline month: {{25}}",
+                    "Presentation length in minutes: {{26}}",
+                    "Data format: {{27}}",
+                    "Supervisor name: {{28}}",
+                    "Equipment needed: {{29}}",
+                    "Meeting day: {{30}}"
+                  ]
+                },
+                "questions": [
+                  {
+                    "n": 21
+                  },
+                  {
+                    "n": 22
+                  },
+                  {
+                    "n": 23
+                  },
+                  {
+                    "n": 24
+                  },
+                  {
+                    "n": 25
+                  },
+                  {
+                    "n": 26
+                  },
+                  {
+                    "n": 27
+                  },
+                  {
+                    "n": 28
+                  },
+                  {
+                    "n": 29
+                  },
+                  {
+                    "n": 30
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "part": 4,
+            "heading": "Urban gardens",
+            "groups": [
+              {
+                "type": "gap",
+                "questionType": "note-completion",
+                "intro": "Urban gardens",
+                "limit": "ONE WORD AND/OR A NUMBER",
+                "body": {
+                  "kind": "text",
+                  "lines": [
+                    "Research city: {{31}}",
+                    "Study duration in years: {{32}}",
+                    "Number of gardens: {{33}}",
+                    "Most common crop: {{34}}",
+                    "Main benefit: {{35}}",
+                    "Main difficulty: {{36}}",
+                    "Preferred soil treatment: {{37}}",
+                    "Volunteer meeting day: {{38}}",
+                    "Recommended container material: {{39}}",
+                    "Final report month: {{40}}"
+                  ]
+                },
+                "questions": [
+                  {
+                    "n": 31
+                  },
+                  {
+                    "n": 32
+                  },
+                  {
+                    "n": 33
+                  },
+                  {
+                    "n": 34
+                  },
+                  {
+                    "n": 35
+                  },
+                  {
+                    "n": 36
+                  },
+                  {
+                    "n": 37
+                  },
+                  {
+                    "n": 38
+                  },
+                  {
+                    "n": 39
+                  },
+                  {
+                    "n": 40
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "key": {
+        "formatVersion": 1,
+        "answers": {
+          "1": "Morgan",
+          "2": "four",
+          "3": "June",
+          "4": "twin",
+          "5": "three",
+          "6": "eight",
+          "7": "train",
+          "8": "vegetarian",
+          "9": "fifty",
+          "10": "6382",
+          "11": "nine",
+          "12": "five",
+          "13": "Monday",
+          "14": "twelve",
+          "15": "eight",
+          "16": "oceans",
+          "17": "upstairs",
+          "18": "entrance",
+          "19": "forty",
+          "20": "Alice",
+          "21": "recycling",
+          "22": "three",
+          "23": "campus",
+          "24": "sixty",
+          "25": "October",
+          "26": "ten",
+          "27": "spreadsheet",
+          "28": "Patel",
+          "29": "recorder",
+          "30": "Thursday",
+          "31": "Bristol",
+          "32": "two",
+          "33": "fifteen",
+          "34": "tomatoes",
+          "35": "exercise",
+          "36": "water",
+          "37": "compost",
+          "38": "Saturday",
+          "39": "wood",
+          "40": "December"
+        }
+      }
+    },
+    "writing": {
+      "title": "Original Academic Writing demonstration",
+      "durationSeconds": 3600,
+      "tasks": [
+        {
+          "prompt": "The chart shows the percentage of residents using three forms of transport in a fictional town in 2010 and 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          "image": "/demo/transport.svg",
+          "minWords": 150
+        },
+        {
+          "prompt": "Some people believe that public libraries should focus on digital resources, while others think printed books should remain their priority. Discuss both views and give your own opinion.",
+          "minWords": 250
+        }
+      ]
+    },
+    "speaking": {
+      "title": "Original Speaking practice",
+      "part1": [
+        "Where do you live?",
+        "What do you enjoy about your neighbourhood?",
+        "How do you usually spend your weekends?",
+        "Do you prefer reading printed books or digital books?",
+        "What skill would you like to learn?"
+      ],
+      "cueCard": "Describe a place you enjoyed visiting.\n\nYou should say:\n\u2022 where it is\n\u2022 when you visited\n\u2022 what you did there\n\nand explain why you enjoyed visiting this place.",
+      "part3": [
+        "Why do people enjoy visiting unfamiliar places?",
+        "How can tourism benefit local communities?",
+        "What problems can large numbers of visitors cause?",
+        "How might travel change in the future?"
+      ]
+    }
+  }
+}

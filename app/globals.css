@@ -179,3 +179,223 @@ textarea::placeholder {
     display: none !important;
   }
 }
+
+/* Local simulator extensions use existing contrast variables. */
+.brand {
+  color: #b51d38;
+  font-size: 24px;
+  letter-spacing: -1px;
+}
+.save-status {
+  font-size: 12px;
+  color: var(--muted);
+}
+.save-error {
+  background: #ffe4e6;
+  color: #9f1239;
+  padding: 8px;
+}
+.audio-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 8px 20px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+}
+.audio-strip audio {
+  max-height: 32px;
+}
+.notice {
+  padding: 12px 24px;
+  background: var(--bg-panel);
+  border-block: 1px solid var(--border);
+}
+.pause-cover {
+  position: fixed;
+  inset: 110px 0 70px;
+  z-index: 45;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+button:not(:disabled),
+a,
+summary {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.local-shell {
+  max-width: 1180px;
+  margin: auto;
+  padding: 40px 30px;
+}
+.local-nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 18px 30px;
+  flex-wrap: wrap;
+}
+.local-nav a {
+  text-decoration: none;
+  font-size: 14px;
+}
+.local-nav a:hover {
+  text-decoration: underline;
+}
+.local-shell h1 {
+  font-size: 32px;
+  font-weight: 650;
+  margin: 18px 0 8px;
+  letter-spacing: -0.7px;
+}
+.local-shell h2 {
+  font-size: 21px;
+  font-weight: 600;
+  margin: 20px 0 12px;
+}
+.local-shell p {
+  line-height: 1.65;
+}
+.local-shell button,
+.local-btn {
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 8px 15px;
+  font-weight: 550;
+  display: inline-block;
+}
+.primary {
+  background: var(--accent) !important;
+  color: var(--accent-fg) !important;
+  border-color: var(--accent) !important;
+}
+.local-row {
+  border-bottom: 1px solid var(--border);
+  padding: 22px 0;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 14px 0;
+}
+.field input,
+.field select,
+.field textarea {
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+}
+.field textarea {
+  min-height: 150px;
+}
+.error {
+  color: var(--incorrect);
+  white-space: pre-wrap;
+  margin: 12px 0;
+}
+.exam-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border-strong);
+  background: var(--bg-panel);
+  flex-wrap: wrap;
+}
+.exam-layout {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.exam-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;
+  flex: 1;
+}
+.exam-body > section {
+  overflow: auto;
+  padding: 28px;
+}
+.exam-body > section + section {
+  border-left: 1px solid var(--border-strong);
+}
+.exam-body textarea.essay {
+  width: 100%;
+  height: calc(100% - 54px);
+  min-height: 260px;
+  padding: 18px;
+  resize: none;
+  line-height: 1.8;
+  border: 1px solid var(--border-strong);
+}
+.exam-footer {
+  padding: 12px 24px;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--border-strong);
+  background: var(--bg-panel);
+}
+.exam-footer button,
+.exam-header button {
+  padding: 6px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.review-table th,
+.review-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+@media (max-width: 700px) {
+  .exam-body {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  .exam-body > section {
+    overflow: visible;
+  }
+  .local-shell {
+    padding: 20px 16px;
+  }
+  .local-nav {
+    gap: 14px;
+    padding: 14px;
+  }
+  .exam-header {
+    gap: 10px;
+    padding: 10px;
+  }
+  .save-status {
+    display: none;
+  }
+}
+
+.exam-dialog { margin: auto; padding: 0; }
+.exam-dialog::backdrop { background: rgb(0 0 0 / 55%); }

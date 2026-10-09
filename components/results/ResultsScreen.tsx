@@ -1,5 +1,8 @@
 "use client";
 
+import { AudioReview } from "@/components/history/MediaReview";
+import { exitFullscreen } from "@/lib/useFullscreen";
+import { MockCoordinator } from "@/components/library/MockCoordinator";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -10,6 +13,11 @@ import type { QuestionResult } from "@/lib/scoring";
 type Filter = "all" | "wrong";
 
 export function ResultsScreen() {
+  const mockRunId = useTestStore((s) => s.session?.mockRunId);
+  if (mockRunId) return <MockCoordinator />;
+  return <StandaloneResults />;
+}
+function StandaloneResults() {
   const router = useRouter();
   const hydrated = useTestStore((s) => s.hydrated);
   const report = useTestStore((s) => s.report);
@@ -22,11 +30,14 @@ export function ResultsScreen() {
     // but only once hydration has settled.
     if (hydrated && report === null) router.replace("/");
     // Leaving fullscreen makes the review readable at a normal window size.
-    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    void exitFullscreen();
   }, [hydrated, report, router]);
 
   const shown = useMemo(
-    () => (report ? report.questions.filter((q) => filter === "all" || !q.correct) : []),
+    () =>
+      report
+        ? report.questions.filter((q) => filter === "all" || !q.correct)
+        : [],
     [report, filter],
   );
 
@@ -65,15 +76,16 @@ export function ResultsScreen() {
       </header>
 
       <section className="mt-6 grid gap-4 sm:grid-cols-3">
-        <Tile label="Band score" value={formatBand(report.band)} big />
+        <Tile label="Estimated Band" value={formatBand(report.band)} big />
         <Tile label="Raw score" value={`${report.raw} / ${report.total}`} big />
         <Tile label="Incorrect" value={String(wrong)} big />
       </section>
 
       {!isStandardLength(report.total) && (
         <p className="mt-3 text-sm text-[var(--muted)]">
-          This test has {report.total} questions rather than 40, so the raw score was scaled to 40
-          before converting to a band. Treat the band as indicative.
+          This test has {report.total} questions rather than 40, so the raw
+          score was scaled to 40 before converting to a band. Treat the band as
+          indicative.
         </p>
       )}
 
@@ -114,7 +126,9 @@ export function ResultsScreen() {
                 type="button"
                 onClick={() => setFilter(f)}
                 className={`rounded px-3 py-1 font-medium ${
-                  filter === f ? "bg-[var(--accent)] text-[var(--accent-fg)]" : ""
+                  filter === f
+                    ? "bg-[var(--accent)] text-[var(--accent-fg)]"
+                    : ""
                 }`}
               >
                 {f === "all" ? `All ${report.total}` : `Incorrect (${wrong})`}
@@ -124,7 +138,9 @@ export function ResultsScreen() {
         </div>
 
         {shown.length === 0 ? (
-          <p className="mt-4 text-[var(--muted)]">Nothing to show — every answer was correct.</p>
+          <p className="mt-4 text-[var(--muted)]">
+            Nothing to show — every answer was correct.
+          </p>
         ) : (
           <ul className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
             {shown.map((q) => (
@@ -155,7 +171,7 @@ function AudioReplay() {
         {audio.map((track) => (
           <li key={`${track.part}-${track.url}`}>
             <p className="mb-1 text-sm font-medium">Part {track.part}</p>
-            <audio controls preload="none" src={track.url} className="w-full" />
+            <AudioReview url={track.url} label={`Part ${track.part}`} />
           </li>
         ))}
       </ul>
@@ -163,11 +179,23 @@ function AudioReplay() {
   );
 }
 
-function Tile({ label, value, big }: { label: string; value: string; big?: boolean }) {
+function Tile({
+  label,
+  value,
+  big,
+}: {
+  label: string;
+  value: string;
+  big?: boolean;
+}) {
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-panel)] px-5 py-4">
       <p className="text-sm text-[var(--muted)]">{label}</p>
-      <p className={`mt-1 font-bold tabular-nums ${big ? "text-3xl" : "text-xl"}`}>{value}</p>
+      <p
+        className={`mt-1 font-bold tabular-nums ${big ? "text-3xl" : "text-xl"}`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

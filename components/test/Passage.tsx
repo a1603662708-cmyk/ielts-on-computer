@@ -34,8 +34,19 @@ export function Passage({
   const containerRef = useRef<HTMLDivElement>(null);
   const [toolbar, setToolbar] = useState<Toolbar | null>(null);
 
-  const highlights = useTestStore((s) => s.session?.highlights ?? NO_HIGHLIGHTS);
-  const notes = useTestStore((s) => s.session?.notes ?? NO_NOTES);
+  const allHighlights = useTestStore(
+    (s) => s.session?.highlights ?? NO_HIGHLIGHTS,
+  );
+  const allNotes = useTestStore((s) => s.session?.notes ?? NO_NOTES);
+  const part = useTestStore((s) => s.session?.activePart ?? 1);
+  const highlights = useMemo(
+    () => allHighlights.filter((a) => (a.part ?? 1) === part),
+    [allHighlights, part],
+  );
+  const notes = useMemo(
+    () => allNotes.filter((a) => (a.part ?? 1) === part),
+    [allNotes, part],
+  );
   const addHighlightRange = useTestStore((s) => s.addHighlightRange);
   const dropHighlightAt = useTestStore((s) => s.dropHighlightAt);
   const addNoteRange = useTestStore((s) => s.addNoteRange);
@@ -63,7 +74,12 @@ export function Passage({
       if (!window.getSelection()?.isCollapsed) return;
 
       const rect = target.getBoundingClientRect();
-      setToolbar({ mode: "existing", index, x: rect.left + rect.width / 2, y: rect.top });
+      setToolbar({
+        mode: "existing",
+        index,
+        x: rect.left + rect.width / 2,
+        y: rect.top,
+      });
     },
     [highlighted, noted],
   );
@@ -76,15 +92,21 @@ export function Passage({
     return () => document.removeEventListener("keydown", onKey);
   }, [closeToolbar]);
 
-  const notesHere = toolbar?.mode === "existing" ? annotationsAt(notes, toolbar.index) : [];
+  const notesHere =
+    toolbar?.mode === "existing" ? annotationsAt(notes, toolbar.index) : [];
   const hlHere = toolbar?.mode === "existing" && highlighted.has(toolbar.index);
 
   return (
-    <div className="relative h-full overflow-y-auto px-6 py-5" data-passage-scroll>
+    <div
+      className="relative h-full overflow-y-auto px-6 py-5"
+      data-passage-scroll
+    >
       <header className="mb-5">
         <h2 className="text-xl font-bold">{passage.title}</h2>
         {passage.subtitle && (
-          <p className="mt-2 font-semibold italic leading-relaxed">{passage.subtitle}</p>
+          <p className="mt-2 font-semibold italic leading-relaxed">
+            {passage.subtitle}
+          </p>
         )}
       </header>
 
@@ -97,7 +119,10 @@ export function Passage({
         {paragraphs.map((para, i) => (
           <p key={i} className="flex">
             {para.label && (
-              <span className="mr-3 min-w-[1.25rem] shrink-0 font-bold" aria-hidden>
+              <span
+                className="mr-3 min-w-[1.25rem] shrink-0 font-bold"
+                aria-hidden
+              >
                 {para.label}
               </span>
             )}
@@ -147,7 +172,10 @@ export function Passage({
       </div>
 
       {toolbar?.mode === "select" && (
-        <FloatingBar x={toolbar.range.rect.left + toolbar.range.rect.width / 2} y={toolbar.range.rect.top}>
+        <FloatingBar
+          x={toolbar.range.rect.left + toolbar.range.rect.width / 2}
+          y={toolbar.range.rect.top}
+        >
           <BarButton
             onClick={() => {
               addHighlightRange(toolbar.range.start, toolbar.range.end);
@@ -223,7 +251,13 @@ function FloatingBar({
   );
 }
 
-function BarButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+function BarButton({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "IELTS Simulator",
+  "version": "1.0.1",
+  "identifier": "local.ielts.simulator",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../out",
+    "devUrl": "http://127.0.0.1:3000",
+    "beforeDevCommand": "npm run dev -- --hostname 127.0.0.1"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "IELTS Simulator",
+        "width": 1360,
+        "height": 900,
+        "minWidth": 760,
+        "minHeight": 600
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost blob: data:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app"
+    ],
+    "category": "Education",
+    "shortDescription": "Local IELTS computer-delivered test simulator",
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "Entitlements.plist"
+    },
+    "icon": [
+      "icons/icon.icns",
+      "icons/icon.png"
+    ]
+  }
+}

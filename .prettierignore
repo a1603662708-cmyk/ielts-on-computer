@@ -1,0 +1,8 @@
+.next*
+out
+node_modules
+public/workers
+src-tauri/target
+playwright-report
+test-results
+package-lock.json

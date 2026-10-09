@@ -1,0 +1,15 @@
+{
+  "title": "Original Academic Writing demonstration",
+  "durationSeconds": 3600,
+  "tasks": [
+    {
+      "prompt": "The chart shows the percentage of residents using three forms of transport in a fictional town in 2010 and 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+      "image": "/demo/transport.svg",
+      "minWords": 150
+    },
+    {
+      "prompt": "Some people believe that public libraries should focus on digital resources, while others think printed books should remain their priority. Discuss both views and give your own opinion.",
+      "minWords": 250
+    }
+  ]
+}

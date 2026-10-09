@@ -12,6 +12,7 @@ export type TestType = (typeof TEST_TYPES)[number];
 
 /** A block of rendered content that may contain `{{n}}` gap placeholders. */
 const BodySchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("flow"), steps: z.array(z.string()).min(1) }),
   z.object({
     kind: z.literal("text"),
     /** Paragraphs. `{{7}}` anywhere becomes an inline input for question 7. */
@@ -27,7 +28,10 @@ const BodySchema = z.discriminatedUnion("kind", [
     heading: z.string().optional(),
     /** `indent: 0` is top level; 1 and 2 nest under the previous entry. */
     items: z.array(
-      z.object({ text: z.string(), indent: z.number().int().min(0).max(3).default(0) }),
+      z.object({
+        text: z.string(),
+        indent: z.number().int().min(0).max(3).default(0),
+      }),
     ),
   }),
   z.object({
@@ -48,6 +52,9 @@ const OptionList = z.array(z.string()).min(2);
 
 const GroupBase = {
   instructions: z.string().optional(),
+  questionType: z.string().optional(),
+  image: z.string().optional(),
+  imageAlt: z.string().optional(),
   /** Extra text shown above the questions (e.g. a scenario or heading). */
   intro: z.string().optional(),
   body: BodySchema.optional(),
@@ -108,7 +115,9 @@ export const GroupSchema = z.discriminatedUnion("type", [
       .min(2),
     optionsTitle: z.string().optional(),
     /** Worked examples shown but not answerable, e.g. "Paragraph F — vii". */
-    examples: z.array(z.object({ prompt: z.string(), key: z.string() })).optional(),
+    examples: z
+      .array(z.object({ prompt: z.string(), key: z.string() }))
+      .optional(),
     questions: z.array(QuestionRef.extend({ prompt: z.string() })).min(1),
   }),
 ]);
@@ -147,18 +156,33 @@ export const TestSchema = z.object({
    * no pause or seek control — exactly like the real test.
    */
   audio: z
-    .array(z.object({ part: z.number().int().min(1), url: z.string().min(1) }))
+    .array(
+      z.object({
+        part: z.number().int().min(1),
+        url: z.string().min(1),
+        duration: z.number().positive().optional(),
+      }),
+    )
     .optional(),
   parts: z.array(PartSchema).min(1),
 });
 export type Test = z.infer<typeof TestSchema>;
 
 /** A single accepted answer, or a list of alternatives (any one is correct). */
-const AnswerValue = z.union([z.string(), z.array(z.string()).min(1)]);
+const NonblankAnswer = z
+  .string()
+  .refine((s) => s.trim().length > 0, "Answer must not be blank");
+const AnswerValue = z.union([NonblankAnswer, z.array(NonblankAnswer).min(1)]);
 
 export const AnswerKeySchema = z.object({
   formatVersion: z.literal(1),
   title: z.string().optional(),
+  normalization: z
+    .object({
+      trimWhitespace: z.boolean().default(true),
+      caseInsensitive: z.boolean().default(true),
+    })
+    .optional(),
   answers: z.record(z.string().regex(/^\d+$/), AnswerValue),
 });
 export type AnswerKey = z.infer<typeof AnswerKeySchema>;
@@ -201,8 +225,7 @@ export function formatZodIssues(error: z.ZodError): ValidationIssue[] {
 }
 
 export type ParseResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; issues: ValidationIssue[] };
+  { ok: true; value: T } | { ok: false; issues: ValidationIssue[] };
 
 function parseWith<T>(schema: z.ZodType<T>, raw: unknown): ParseResult<T> {
   const result = schema.safeParse(raw);
@@ -224,7 +247,9 @@ export function parseJson(text: string): ParseResult<unknown> {
   } catch (e) {
     return {
       ok: false,
-      issues: [{ level: "error", message: `Not valid JSON — ${(e as Error).message}` }],
+      issues: [
+        { level: "error", message: `Not valid JSON — ${(e as Error).message}` },
+      ],
     };
   }
 }
@@ -236,6 +261,22 @@ export function parseJson(text: string): ParseResult<unknown> {
 export function validateTestInternals(test: Test): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const seen = new Map<number, number>();
+  const parts = new Set<number>();
+  for (const part of test.parts) {
+    if (parts.has(part.part))
+      issues.push({
+        level: "error",
+        message: `Part ${part.part} is duplicated; each part number must be unique.`,
+      });
+    parts.add(part.part);
+  }
+  for (const track of test.audio ?? []) {
+    if (!parts.has(track.part))
+      issues.push({
+        level: "error",
+        message: `Audio references missing Part ${track.part}.`,
+      });
+  }
 
   for (const part of test.parts) {
     for (const group of part.groups) {
@@ -296,7 +337,9 @@ export function validateTestInternals(test: Test): ValidationIssue[] {
 
       // A gap question needs either its own prompt or a placeholder in the body.
       if (group.type === "gap") {
-        const inBody = group.body ? new Set(placeholdersIn(group.body)) : new Set<number>();
+        const inBody = group.body
+          ? new Set(placeholdersIn(group.body))
+          : new Set<number>();
         for (const q of group.questions) {
           if (!q.prompt && !inBody.has(q.n)) {
             issues.push({
@@ -365,7 +408,10 @@ export function validateTestInternals(test: Test): ValidationIssue[] {
 }
 
 /** Cross-checks the answer key against the questions file. */
-export function validateAgainstAnswers(test: Test, key: AnswerKey): ValidationIssue[] {
+export function validateAgainstAnswers(
+  test: Test,
+  key: AnswerKey,
+): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const numbers = testQuestionNumbers(test);
   const answered = new Set(Object.keys(key.answers).map(Number));
@@ -415,13 +461,15 @@ export function validateAgainstAnswers(test: Test, key: AnswerKey): ValidationIs
 /** All `{{n}}` placeholders appearing anywhere in a body block. */
 export function placeholdersIn(body: Body): number[] {
   const strings: string[] =
-    body.kind === "text"
-      ? body.lines
-      : body.kind === "list"
-        ? body.items
-        : body.kind === "notes"
-          ? body.items.map((i) => i.text)
-          : [...body.headers, ...body.rows.flat()];
+    body.kind === "flow"
+      ? body.steps
+      : body.kind === "text"
+        ? body.lines
+        : body.kind === "list"
+          ? body.items
+          : body.kind === "notes"
+            ? body.items.map((i) => i.text)
+            : [...body.headers, ...body.rows.flat()];
 
   const found: number[] = [];
   for (const s of strings) {

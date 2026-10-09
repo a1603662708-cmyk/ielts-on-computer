@@ -1,15 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { clockNow } from "@/exam/clock";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Counts down to a wall-clock deadline rather than decrementing a counter, so
  * the timer stays accurate when the tab is throttled or the machine sleeps.
  * Fires `onExpire` exactly once.
  */
-export function useCountdown(endsAt: number | null, onExpire?: () => void): number {
+export function useCountdown(
+  endsAt: number | null,
+  onExpire?: () => void,
+): number {
+  const onExpireRef = useRef(onExpire);
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  }, [onExpire]);
   const [remaining, setRemaining] = useState(() =>
-    endsAt === null ? 0 : Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)),
+    endsAt === null ? 0 : Math.max(0, Math.ceil((endsAt - clockNow()) / 1000)),
   );
 
   useEffect(() => {
@@ -17,11 +25,11 @@ export function useCountdown(endsAt: number | null, onExpire?: () => void): numb
 
     let fired = false;
     const tick = () => {
-      const left = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+      const left = Math.max(0, Math.ceil((endsAt - clockNow()) / 1000));
       setRemaining(left);
       if (left === 0 && !fired) {
         fired = true;
-        onExpire?.();
+        onExpireRef.current?.();
       }
     };
 
@@ -37,7 +45,6 @@ export function useCountdown(endsAt: number | null, onExpire?: () => void): numb
     };
     // `onExpire` is intentionally not a dependency: re-running would restart
     // the interval on every parent render and could fire the callback twice.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endsAt]);
 
   return remaining;
@@ -45,12 +52,8 @@ export function useCountdown(endsAt: number | null, onExpire?: () => void): numb
 
 export function formatClock(totalSeconds: number): string {
   const s = Math.max(0, totalSeconds);
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  const mm = String(h > 0 ? m : m).padStart(2, "0");
-  const ss = String(sec).padStart(2, "0");
-  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+  const m = Math.floor(s / 60);
+  return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
 
 /** Long form for announcements and the results page. */

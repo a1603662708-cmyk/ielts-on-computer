@@ -130,7 +130,13 @@ export function NotesButton({ onClick }: { onClick: () => void }) {
       title="Show notes"
       className="flex items-center gap-1.5 rounded border border-[var(--border-strong)] px-3 py-1.5 text-sm font-medium"
     >
-      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden focusable="false">
+      <svg
+        viewBox="0 0 16 16"
+        width="16"
+        height="16"
+        aria-hidden
+        focusable="false"
+      >
         <rect
           x="2.5"
           y="1.5"
@@ -142,7 +148,13 @@ export function NotesButton({ onClick }: { onClick: () => void }) {
           strokeWidth="1.4"
         />
         {[5, 8, 11].map((y) => (
-          <path key={y} d={`M5 ${y}h6`} stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          <path
+            key={y}
+            d={`M5 ${y}h6`}
+            stroke="currentColor"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+          />
         ))}
       </svg>
       Notes ({count})

@@ -1,5 +1,6 @@
 "use client";
 
+import { AnnotatedText } from "./AnnotatedText";
 import { Fragment } from "react";
 import type { Body } from "@/lib/schema";
 import { GapInput } from "./parts";
@@ -11,6 +12,19 @@ import { GapInput } from "./parts";
  */
 export function BodyBlock({ body }: { body: Body }) {
   switch (body.kind) {
+    case "flow":
+      return (
+        <ol className="flex flex-col items-center gap-2">
+          {body.steps.map((step, i) => (
+            <li className="w-full text-center" key={i}>
+              <div className="border border-[var(--border-strong)] p-4">
+                <Interpolated text={step} />
+              </div>
+              {i < body.steps.length - 1 && <span aria-hidden>↓</span>}
+            </li>
+          ))}
+        </ol>
+      );
     case "text":
       return (
         <div className="space-y-3">
@@ -48,7 +62,11 @@ export function BodyBlock({ body }: { body: Body }) {
           <ul className="space-y-2 leading-loose">
             {body.items.map((item, i) => (
               <li key={i} style={{ paddingLeft: `${item.indent * 1.5}rem` }}>
-                {item.indent > 0 && <span aria-hidden className="mr-2">•</span>}
+                {item.indent > 0 && (
+                  <span aria-hidden className="mr-2">
+                    •
+                  </span>
+                )}
                 <Interpolated text={item.text} />
               </li>
             ))}
@@ -112,7 +130,7 @@ function Interpolated({ text }: { text: string }) {
           <Fragment key={i}>
             {chunk.split("\n").map((line, j, all) => (
               <Fragment key={j}>
-                {line}
+                <AnnotatedText text={line} scope={`body-${text}-${i}-${j}`} />
                 {j < all.length - 1 && <br />}
               </Fragment>
             ))}

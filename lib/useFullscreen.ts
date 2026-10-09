@@ -1,56 +1,76 @@
 "use client";
-
-import { useCallback, useSyncExternalStore } from "react";
-
-function subscribe(onChange: () => void): () => void {
-  document.addEventListener("fullscreenchange", onChange);
-  return () => document.removeEventListener("fullscreenchange", onChange);
+import { useSyncExternalStore } from "react";
+const native = () =>
+  typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+let nativeFullscreen = false;
+const listeners = new Set<() => void>();
+async function nativeWindow() {
+  return (await import("@tauri-apps/api/window")).getCurrentWindow();
 }
-
+export async function enterFullscreen() {
+  try {
+    if (native()) {
+      await (await nativeWindow()).setFullscreen(true);
+      nativeFullscreen = true;
+      listeners.forEach((f) => f());
+    } else if (!document.fullscreenElement)
+      await document.documentElement.requestFullscreen?.();
+  } catch {
+    /* Users may decline fullscreen; the exam remains usable. */
+  }
+}
+export async function exitFullscreen() {
+  try {
+    if (native()) {
+      await (await nativeWindow()).setFullscreen(false);
+      nativeFullscreen = false;
+      listeners.forEach((f) => f());
+    } else if (document.fullscreenElement) await document.exitFullscreen();
+  } catch {}
+}
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  document.addEventListener("fullscreenchange", onChange);
+  let off: (() => void) | undefined;
+  let closed = false;
+  if (native())
+    void nativeWindow().then(async (win) => {
+      const refresh = () => {
+        void win.isFullscreen().then((value) => {
+          nativeFullscreen = value;
+          onChange();
+        });
+      };
+      refresh();
+      const remove = await win.onResized(refresh);
+      if (closed) remove();
+      else off = remove;
+    });
+  return () => {
+    closed = true;
+    listeners.delete(onChange);
+    document.removeEventListener("fullscreenchange", onChange);
+    off?.();
+  };
+}
 const noopSubscribe = () => () => {};
-
-/**
- * Fullscreen must be requested inside a user gesture, so `enter` is called
- * straight from the Start button's click handler.
- *
- * Fullscreen state lives on `document`, not in React, so it is read through
- * `useSyncExternalStore` rather than mirrored into state via an effect.
- */
-export function useFullscreen(): {
-  isFullscreen: boolean;
-  supported: boolean;
-  enter: () => Promise<void>;
-  exit: () => Promise<void>;
-} {
+export function useFullscreen() {
   const isFullscreen = useSyncExternalStore(
     subscribe,
-    () => document.fullscreenElement !== null,
+    () => (native() ? nativeFullscreen : document.fullscreenElement !== null),
     () => false,
   );
-
   const supported = useSyncExternalStore(
     noopSubscribe,
-    () => typeof document.documentElement.requestFullscreen === "function",
+    () =>
+      native() ||
+      typeof document.documentElement.requestFullscreen === "function",
     () => true,
   );
-
-  const enter = useCallback(async () => {
-    try {
-      if (document.fullscreenElement === null) {
-        await document.documentElement.requestFullscreen();
-      }
-    } catch {
-      // Denied by the browser or the user — the test still runs windowed.
-    }
-  }, []);
-
-  const exit = useCallback(async () => {
-    try {
-      if (document.fullscreenElement !== null) await document.exitFullscreen();
-    } catch {
-      /* already exited */
-    }
-  }, []);
-
-  return { isFullscreen, supported, enter, exit };
+  return {
+    isFullscreen,
+    supported,
+    enter: enterFullscreen,
+    exit: exitFullscreen,
+  };
 }

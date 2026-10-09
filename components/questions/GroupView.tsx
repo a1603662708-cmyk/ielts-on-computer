@@ -1,9 +1,18 @@
 "use client";
 
+import { AnnotatedText } from "./AnnotatedText";
+import { AssetImage } from "@/components/AssetImage";
 import type { Group } from "@/lib/schema";
 import { NO_SELECTION, useTestStore } from "@/lib/store";
 import { BodyBlock } from "./BodyBlock";
-import { ChoiceList, FlagButton, GapInput, Instructions, LETTERS, QuestionShell } from "./parts";
+import {
+  ChoiceList,
+  FlagButton,
+  GapInput,
+  Instructions,
+  LETTERS,
+  QuestionShell,
+} from "./parts";
 
 const TF_NG = ["TRUE", "FALSE", "NOT GIVEN"];
 const YN_NG = ["YES", "NO", "NOT GIVEN"];
@@ -12,7 +21,15 @@ export function GroupView({ group }: { group: Group }) {
   return (
     <section className="border-t border-[var(--border)] py-6 first:border-t-0">
       <Instructions text={group.instructions} />
-      {group.intro && <p className="mb-4 font-semibold leading-relaxed">{group.intro}</p>}
+      {group.intro && (
+        <p className="mb-4 font-semibold leading-relaxed">{group.intro}</p>
+      )}
+      {group.image && (
+        <AssetImage
+          src={group.image}
+          alt={group.imageAlt ?? "Question diagram"}
+        />
+      )}
       <GroupBody group={group} />
     </section>
   );
@@ -71,7 +88,9 @@ function GroupBody({ group }: { group: Group }) {
           {group.questions.map((q) =>
             q.prompt ? (
               <QuestionShell key={q.n} n={q.n}>
-                <p className="leading-relaxed">{q.prompt}</p>
+                <p className="leading-relaxed">
+                  <AnnotatedText text={q.prompt} scope={`q-${q.n}`} />
+                </p>
                 <div className="mt-2">
                   <GapInput n={q.n} />
                 </div>
@@ -108,7 +127,9 @@ function GroupBody({ group }: { group: Group }) {
             <ul className="space-y-1">
               {group.options.map((o) => (
                 <li key={o.key} className="flex gap-3">
-                  <span className="min-w-[2.5rem] shrink-0 font-semibold">{o.key}</span>
+                  <span className="min-w-[2.5rem] shrink-0 font-semibold">
+                    {o.key}
+                  </span>
                   <span>{o.text}</span>
                 </li>
               ))}
@@ -116,8 +137,13 @@ function GroupBody({ group }: { group: Group }) {
           </div>
 
           {group.examples?.map((ex) => (
-            <div key={ex.prompt} className="flex items-baseline gap-3 py-2 text-[var(--muted)]">
-              <span className="min-w-[1.75rem] text-right text-sm font-semibold">Example</span>
+            <div
+              key={ex.prompt}
+              className="flex items-baseline gap-3 py-2 text-[var(--muted)]"
+            >
+              <span className="min-w-[1.75rem] text-right text-sm font-semibold">
+                Example
+              </span>
               <span className="flex-1">{ex.prompt}</span>
               <span className="font-semibold">{ex.key}</span>
             </div>
@@ -170,7 +196,11 @@ function MatchingSelect({
  * "Choose TWO letters" — one selection shared across a range of question
  * numbers, stored against the first number in that range.
  */
-function MultiSelect({ group }: { group: Extract<Group, { type: "mcq-multi" }> }) {
+function MultiSelect({
+  group,
+}: {
+  group: Extract<Group, { type: "mcq-multi" }>;
+}) {
   const [from, to] = group.range;
   const numbers = Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
@@ -193,13 +223,15 @@ function MultiSelect({ group }: { group: Extract<Group, { type: "mcq-multi" }> }
   const remaining = group.pick - selected.length;
 
   return (
-    <div className="py-2">
+    <div className="py-2" id={`q-${from}`}>
       <div className="flex items-start gap-2.5">
         <span className="mt-0.5 shrink-0 font-bold tabular-nums">
           {from}–{to}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="leading-relaxed">{group.prompt}</p>
+          <p className="leading-relaxed">
+            <AnnotatedText text={group.prompt} scope={`multi-${from}`} />
+          </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {remaining > 0
               ? `Choose ${remaining} more.`
@@ -231,7 +263,9 @@ function MultiSelect({ group }: { group: Extract<Group, { type: "mcq-multi" }> }
         </div>
         <div className="flex shrink-0 flex-col">
           {numbers.map((n) => (
-            <FlagButton key={n} n={n} />
+            <span key={n} id={n === from ? undefined : `q-${n}`}>
+              <FlagButton n={n} />
+            </span>
           ))}
         </div>
       </div>

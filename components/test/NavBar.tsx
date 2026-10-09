@@ -19,11 +19,17 @@ export function NavBar({
 }) {
   const responses = useTestStore((s) => s.session?.responses ?? NO_RESPONSES);
   const flagged = useTestStore((s) => s.session?.flagged ?? NO_FLAGS);
-  const activePart = useTestStore((s) => s.session?.activePart ?? test.parts[0].part);
+  const activePart = useTestStore(
+    (s) => s.session?.activePart ?? test.parts[0].part,
+  );
+  const current = useTestStore((s) => s.session?.currentQuestion);
   const setActivePart = useTestStore((s) => s.setActivePart);
 
   const entries = useMemo(() => navEntries(test), [test]);
-  const answered = useMemo(() => answeredSet(test, responses), [test, responses]);
+  const answered = useMemo(
+    () => answeredSet(test, responses),
+    [test, responses],
+  );
   const flags = useMemo(() => new Set(flagged), [flagged]);
 
   const partOrder = test.parts.map((p) => p.part);
@@ -75,6 +81,7 @@ export function NavBar({
                       n={n}
                       answered={answered.has(n)}
                       flagged={flags.has(n)}
+                      current={current === n}
                       dim={!isActive}
                       onClick={() => onGoTo(n, part.part)}
                     />
@@ -104,18 +111,26 @@ function NavCell({
   answered,
   flagged,
   dim,
+  current,
   onClick,
 }: {
   n: number;
   answered: boolean;
   flagged: boolean;
   dim: boolean;
+  current: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      aria-current={current ? "step" : undefined}
+      style={
+        current
+          ? { outline: "2px solid var(--accent)", outlineOffset: 1 }
+          : undefined
+      }
       title={`Question ${n}${answered ? " — answered" : ""}${flagged ? " — flagged" : ""}`}
       aria-label={`Go to question ${n}${answered ? ", answered" : ", not answered"}${
         flagged ? ", flagged" : ""

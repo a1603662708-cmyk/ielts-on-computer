@@ -1,0 +1,310 @@
+{
+  "paper": {
+    "formatVersion": 1,
+    "title": "Original demonstration \u2014 Listening",
+    "type": "listening",
+    "durationSeconds": 1920,
+    "instructions": "Original short demonstration recordings. This is a functional demo, not a full-length IELTS paper. Write ONE WORD AND/OR A NUMBER.",
+    "audio": [
+      {
+        "part": 1,
+        "url": "/demo/part1.m4a"
+      },
+      {
+        "part": 2,
+        "url": "/demo/part2.m4a"
+      },
+      {
+        "part": 3,
+        "url": "/demo/part3.m4a"
+      },
+      {
+        "part": 4,
+        "url": "/demo/part4.m4a"
+      }
+    ],
+    "parts": [
+      {
+        "part": 1,
+        "heading": "Visitor booking",
+        "groups": [
+          {
+            "type": "gap",
+            "questionType": "note-completion",
+            "intro": "Visitor booking",
+            "limit": "ONE WORD AND/OR A NUMBER",
+            "body": {
+              "kind": "text",
+              "lines": [
+                "Family name: {{1}}",
+                "Number of guests: {{2}}",
+                "Arrival month: {{3}}",
+                "Room type: {{4}}",
+                "Nights requested: {{5}}",
+                "Breakfast time: {{6}}",
+                "Transport: {{7}}",
+                "Dietary requirement: {{8}}",
+                "Deposit amount: {{9}}",
+                "Booking reference: {{10}}"
+              ]
+            },
+            "questions": [
+              {
+                "n": 1
+              },
+              {
+                "n": 2
+              },
+              {
+                "n": 3
+              },
+              {
+                "n": 4
+              },
+              {
+                "n": 5
+              },
+              {
+                "n": 6
+              },
+              {
+                "n": 7
+              },
+              {
+                "n": 8
+              },
+              {
+                "n": 9
+              },
+              {
+                "n": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "part": 2,
+        "heading": "Museum visit",
+        "groups": [
+          {
+            "type": "gap",
+            "questionType": "note-completion",
+            "intro": "Museum visit",
+            "limit": "ONE WORD AND/OR A NUMBER",
+            "body": {
+              "kind": "text",
+              "lines": [
+                "Opening time: {{11}}",
+                "Closing time: {{12}}",
+                "Closed day: {{13}}",
+                "Adult ticket price: {{14}}",
+                "Student ticket price: {{15}}",
+                "Main exhibition theme: {{16}}",
+                "Cafe location: {{17}}",
+                "Meeting point: {{18}}",
+                "Tour length in minutes: {{19}}",
+                "Guide name: {{20}}"
+              ]
+            },
+            "questions": [
+              {
+                "n": 11
+              },
+              {
+                "n": 12
+              },
+              {
+                "n": 13
+              },
+              {
+                "n": 14
+              },
+              {
+                "n": 15
+              },
+              {
+                "n": 16
+              },
+              {
+                "n": 17
+              },
+              {
+                "n": 18
+              },
+              {
+                "n": 19
+              },
+              {
+                "n": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "part": 3,
+        "heading": "Student project",
+        "groups": [
+          {
+            "type": "gap",
+            "questionType": "note-completion",
+            "intro": "Student project",
+            "limit": "ONE WORD AND/OR A NUMBER",
+            "body": {
+              "kind": "text",
+              "lines": [
+                "Project topic: {{21}}",
+                "Team size: {{22}}",
+                "Survey location: {{23}}",
+                "Participants needed: {{24}}",
+                "Deadline month: {{25}}",
+                "Presentation length in minutes: {{26}}",
+                "Data format: {{27}}",
+                "Supervisor name: {{28}}",
+                "Equipment needed: {{29}}",
+                "Meeting day: {{30}}"
+              ]
+            },
+            "questions": [
+              {
+                "n": 21
+              },
+              {
+                "n": 22
+              },
+              {
+                "n": 23
+              },
+              {
+                "n": 24
+              },
+              {
+                "n": 25
+              },
+              {
+                "n": 26
+              },
+              {
+                "n": 27
+              },
+              {
+                "n": 28
+              },
+              {
+                "n": 29
+              },
+              {
+                "n": 30
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "part": 4,
+        "heading": "Urban gardens",
+        "groups": [
+          {
+            "type": "gap",
+            "questionType": "note-completion",
+            "intro": "Urban gardens",
+            "limit": "ONE WORD AND/OR A NUMBER",
+            "body": {
+              "kind": "text",
+              "lines": [
+                "Research city: {{31}}",
+                "Study duration in years: {{32}}",
+                "Number of gardens: {{33}}",
+                "Most common crop: {{34}}",
+                "Main benefit: {{35}}",
+                "Main difficulty: {{36}}",
+                "Preferred soil treatment: {{37}}",
+                "Volunteer meeting day: {{38}}",
+                "Recommended container material: {{39}}",
+                "Final report month: {{40}}"
+              ]
+            },
+            "questions": [
+              {
+                "n": 31
+              },
+              {
+                "n": 32
+              },
+              {
+                "n": 33
+              },
+              {
+                "n": 34
+              },
+              {
+                "n": 35
+              },
+              {
+                "n": 36
+              },
+              {
+                "n": 37
+              },
+              {
+                "n": 38
+              },
+              {
+                "n": 39
+              },
+              {
+                "n": 40
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "key": {
+    "formatVersion": 1,
+    "answers": {
+      "1": "Morgan",
+      "2": "four",
+      "3": "June",
+      "4": "twin",
+      "5": "three",
+      "6": "eight",
+      "7": "train",
+      "8": "vegetarian",
+      "9": "fifty",
+      "10": "6382",
+      "11": "nine",
+      "12": "five",
+      "13": "Monday",
+      "14": "twelve",
+      "15": "eight",
+      "16": "oceans",
+      "17": "upstairs",
+      "18": "entrance",
+      "19": "forty",
+      "20": "Alice",
+      "21": "recycling",
+      "22": "three",
+      "23": "campus",
+      "24": "sixty",
+      "25": "October",
+      "26": "ten",
+      "27": "spreadsheet",
+      "28": "Patel",
+      "29": "recorder",
+      "30": "Thursday",
+      "31": "Bristol",
+      "32": "two",
+      "33": "fifteen",
+      "34": "tomatoes",
+      "35": "exercise",
+      "36": "water",
+      "37": "compost",
+      "38": "Saturday",
+      "39": "wood",
+      "40": "December"
+    }
+  }
+}

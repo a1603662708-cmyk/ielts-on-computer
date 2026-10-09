@@ -10,9 +10,9 @@ const CONTRASTS: { value: Contrast; label: string }[] = [
 ];
 
 const SIZES: { value: TextSize; label: string }[] = [
-  { value: "regular", label: "Regular" },
-  { value: "large", label: "Large" },
-  { value: "xlarge", label: "Extra large" },
+  { value: "regular", label: "Small" },
+  { value: "large", label: "Medium" },
+  { value: "xlarge", label: "Large" },
 ];
 
 type Panel = "root" | "contrast" | "textsize";
@@ -74,9 +74,23 @@ export function OptionsMenu({
         title="Options"
         className="flex items-center gap-2 rounded border border-[var(--border-strong)] px-3 py-1.5 text-sm font-medium"
       >
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden focusable="false">
+        <svg
+          viewBox="0 0 16 16"
+          width="16"
+          height="16"
+          aria-hidden
+          focusable="false"
+        >
           {[3, 8, 13].map((y) => (
-            <rect key={y} x="1" y={y - 1} width="14" height="2" fill="currentColor" rx="1" />
+            <rect
+              key={y}
+              x="1"
+              y={y - 1}
+              width="14"
+              height="2"
+              fill="currentColor"
+              rx="1"
+            />
           ))}
         </svg>
         Options
@@ -114,7 +128,8 @@ export function OptionsMenu({
                 Submit test
               </MenuItem>
               <p className="px-3 pb-1.5 pt-1 text-xs text-[var(--muted)]">
-                Not part of the real exam — added so you can end a practice run early.
+                Not part of the real exam — added so you can end a practice run
+                early.
               </p>
             </>
           )}

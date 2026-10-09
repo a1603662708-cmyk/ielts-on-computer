@@ -1,5 +1,6 @@
 "use client";
 
+import { DownloadLink } from "@/components/DownloadLink";
 import { useState } from "react";
 import type { TestType } from "@/lib/schema";
 
@@ -37,7 +38,8 @@ export function SampleTests({
         fetch(`/samples/${questionsFile}`),
         fetch(`/samples/${answersFile}`),
       ]);
-      if (!q.ok || !a.ok) throw new Error("the sample files could not be fetched");
+      if (!q.ok || !a.ok)
+        throw new Error("the sample files could not be fetched");
       onLoad({
         questions: { text: await q.text(), filename: questionsFile },
         answers: { text: await a.text(), filename: answersFile },
@@ -68,22 +70,24 @@ export function SampleTests({
           {busy ? "Loading…" : "Load demo test"}
         </button>
 
-        <span className="text-sm text-[var(--muted)]">or download to edit:</span>
+        <span className="text-sm text-[var(--muted)]">
+          or download to edit:
+        </span>
 
-        <a
+        <DownloadLink
           href={`/samples/${questionsFile}`}
-          download={questionsFile}
+          filename={questionsFile}
           className="rounded border border-[var(--border-strong)] px-3 py-1.5 text-sm font-medium"
         >
           Questions ↓
-        </a>
-        <a
+        </DownloadLink>
+        <DownloadLink
           href={`/samples/${answersFile}`}
-          download={answersFile}
+          filename={answersFile}
           className="rounded border border-[var(--border-strong)] px-3 py-1.5 text-sm font-medium"
         >
           Answers ↓
-        </a>
+        </DownloadLink>
       </div>
 
       {error && <p className="mt-3 text-sm text-[var(--incorrect)]">{error}</p>}

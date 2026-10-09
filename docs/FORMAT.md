@@ -267,3 +267,8 @@ Raw score converts to a band using the official tables — the Listening table f
 - [ ] `matching`: answer-key values match an option `key`
 - [ ] Listening: at least one `audio` entry, and every URL loads
 - [ ] Reading: every part has a `passage`
+
+> Local simulator extension: consult FORMAT-V2.md for current scoring defaults,
+> per-group images, explicit flow-chart bodies, library metadata and portable media.
+> This retained upstream document describes v1 authoring; its historical lenient
+> article/punctuation matching is superseded by explicit whitespace/case settings.
