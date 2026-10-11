@@ -16,6 +16,7 @@ export function AudioRunner({ test }: { test: Test }) {
   const [loading, setLoading] = useState(true);
   const [rate, setRate] = useState(1);
   const rateRef = useRef(1);
+  const naturalTransition = useRef<number | null>(null);
   const tracks = test.audio;
   const mode = session?.mode ?? "mock";
   const paused = Boolean(session?.pausedAt);
@@ -30,7 +31,10 @@ export function AudioRunner({ test }: { test: Test }) {
       if (!s || !el || !tracks) return;
       let target = index;
       let offset = s.audioOffset;
-      if (s.mode === "mock" && tracks.every((t) => t.duration)) {
+      // A continuous transition must play the next track from its beginning.
+      // Wall-clock catch-up is only for reopening/resuming the exam.
+      if (naturalTransition.current === index) offset = 0;
+      else if (s.mode === "mock" && tracks.every((t) => t.duration)) {
         const pos = audioPosition(
           tracks.map((t) => t.duration!),
           (clockNow() - s.startedAt) / 1000,
@@ -101,6 +105,7 @@ export function AudioRunner({ test }: { test: Test }) {
   if (!tracks?.length) return <p role="alert">No audio attached.</p>;
   function ended() {
     const next = index + 1;
+    naturalTransition.current = next;
     useTestStore.getState().audioProgress(next, 0);
     setIndex(next);
     if (tracks?.[next])

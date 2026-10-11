@@ -1,4 +1,6 @@
 import { db, useStorageStatus } from "./db";
+import { wavHeader } from "./wav";
+import { fixWebmDuration } from "@fix-webm-duration/fix";
 import type { RecordingChunk, RecordingSessionRecord } from "./recording-types";
 
 // Strict transactions acknowledge a chunk only after the transaction commits.
@@ -55,11 +57,13 @@ export async function completeRecording(sessionId: string) {
   });
   const session = await tx.store.get(sessionId);
   if (!session) throw new Error("Missing recording session.");
-  await tx.store.put({
-    ...session,
-    status: "completed",
-    updatedAt: Date.now(),
-  });
+  if (session.lastSequence < 0) await tx.store.delete(sessionId);
+  else
+    await tx.store.put({
+      ...session,
+      status: "completed",
+      updatedAt: Date.now(),
+    });
   await tx.done;
 }
 export async function recoverRecordings() {
@@ -69,7 +73,8 @@ export async function recoverRecordings() {
   });
   const sessions = await tx.store.getAll();
   for (const session of sessions)
-    if (session.status === "recording") {
+    if (session.lastSequence < 0) await tx.store.delete(session.sessionId);
+    else if (session.status === "recording") {
       session.status = "interrupted";
       await tx.store.put(session);
     }
@@ -106,10 +111,18 @@ export async function assembleRecording(sessionId: string) {
     );
   // MediaRecorder's chunks are ordered fragments of ONE container, not separate
   // media files. Assemble only for playback/export; never rewrite past chunks.
-  return new Blob(
-    chunks.map((c) => c.blob),
+  const blob = new Blob(
+    [
+      ...(session.mimeType === "audio/wav"
+        ? [wavHeader(session.bytes, session.sampleRate!)]
+        : []),
+      ...chunks.map((c) => c.blob),
+    ],
     { type: session.mimeType },
   );
+  return session.mimeType.includes("webm")
+    ? fixWebmDuration(blob, session.duration * 1000, { logger: false })
+    : blob;
 }
 export async function deleteRecording(sessionId: string) {
   const database = await db();

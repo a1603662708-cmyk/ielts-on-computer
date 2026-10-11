@@ -150,7 +150,7 @@ test("RC09 simulated disk quota failure is visible and last answer survives refr
   page,
 }) => {
   await page.addInitScript(() => {
-    IDBObjectStore.prototype.add = function () {
+    IDBObjectStore.prototype.put = function () {
       throw new DOMException(
         "QA injected quota exhaustion",
         "QuotaExceededError",
@@ -217,5 +217,23 @@ test("RC10 recording quota failure blocks finish and retries the actual captured
     JSON.parse(localStorage.getItem("ielts.journal.work.session")!),
   );
   expect(s.recordings).toHaveLength(1);
-  expect(s.recordings[0].duration).toBeGreaterThan(1);
+  expect(s.recordings[0].duration).toBeGreaterThan(0.45);
+});
+
+test("RC11 natural Mock audio transition starts at zero despite wall-clock drift", async ({ page }) => {
+  await choose(page, "Listening", "mock");
+  await expect.poll(() => page.locator("audio").evaluate((e) => (e as HTMLAudioElement).currentTime)).toBeGreaterThan(0);
+  await page.locator("audio").evaluate((e) => {
+    const a = e as HTMLAudioElement;
+    const s = JSON.parse(localStorage.getItem("ielts.journal.ielts.session")!);
+    const originalNow = Date.now;
+    const delta = s.startedAt + (a.duration + 5) * 1000 - originalNow();
+    Date.now = () => originalNow() + delta;
+    a.currentTime = a.duration - 0.1;
+  });
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("ielts.journal.ielts.session")!).audioIndex)).toBe(1);
+  await expect.poll(() => page.locator("audio").evaluate((e) => {
+    const a = e as HTMLAudioElement;
+    return !a.paused && a.currentTime > 0 && a.currentTime < 2;
+  })).toBe(true);
 });

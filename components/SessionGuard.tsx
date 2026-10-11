@@ -50,25 +50,25 @@ export function SessionGuard({ children }: { children: React.ReactNode }) {
       release?.();
     };
   }, []);
-  if (state === "ready")
-    return (
-      <>
-        <RecordingExitGuard />
-        {children}
-      </>
-    );
   return (
-    <main className="local-shell">
-      <h1>IELTS Simulator</h1>
-      <p role={state === "loading" ? "status" : "alert"}>
-        {state === "loading" ? "Opening local exam data…" : state}
-      </p>
-      {state !== "loading" && (
-        <p>
-          Close the other simulator window, then reload this page. Do not clear
-          site data: it contains your saved work.
-        </p>
+    <>
+      <RecordingExitGuard />
+      {state === "ready" ? (
+        children
+      ) : (
+        <main className="local-shell">
+          <h1>IELTS Simulator</h1>
+          <p role={state === "loading" ? "status" : "alert"}>
+            {state === "loading" ? "Opening local exam data…" : state}
+          </p>
+          {state !== "loading" && (
+            <p>
+              Close the other simulator window, then reload this page. Do not
+              clear site data: it contains your saved work.
+            </p>
+          )}
+        </main>
       )}
-    </main>
+    </>
   );
 }

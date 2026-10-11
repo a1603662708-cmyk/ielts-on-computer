@@ -9,6 +9,7 @@ export type RecordingSessionRecord = {
   updatedAt: number;
   status: "recording" | "completed" | "interrupted";
   mimeType: string;
+  sampleRate?: number;
   timeslice: number;
   lastSequence: number;
   duration: number;

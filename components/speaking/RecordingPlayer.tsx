@@ -41,7 +41,7 @@ export function RecordingPlayer({ entry }: { entry: Recording }) {
                   .then((blob) =>
                     downloadFile(
                       blob,
-                      `speaking-${entry.id}.${blob.type.includes("mp4") ? "m4a" : "webm"}`,
+                      `speaking-${entry.id}.${blob.type.includes("wav") ? "wav" : blob.type.includes("mp4") ? "m4a" : "webm"}`,
                     ),
                   )
                   .catch((e) => setError(String(e)));

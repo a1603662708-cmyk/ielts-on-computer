@@ -3,7 +3,10 @@ import { useStorageStatus } from "@/storage/db";
 import { useRecordingStatus } from "./speaking/recordingEngine";
 export function SaveStatus() {
   const recording = useRecordingStatus();
-  const { pending, error } = useStorageStatus();
+  const { pending, error: storageError } = useStorageStatus();
+  const error =
+    storageError ||
+    (recording.error ? "Recording not saved — see error below" : null);
   return (
     <span
       className={error ? "save-error" : "save-status"}

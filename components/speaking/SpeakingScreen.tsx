@@ -230,28 +230,30 @@ export function SpeakingScreen() {
                 Next question / part
               </button>
             </div>
-            {entries.map((r) => (
-              <div key={r.id}>
-                <RecordingPlayer entry={r} />
-                {session.mode === "practice" && !recorder.recording && (
-                  <button
-                    onClick={() => {
-                      void deleteAsset(r.asset)
-                        .then(() =>
-                          useWorkStore.getState().update({
-                            recordings: session.recordings.filter(
-                              (e) => e.id !== r.id,
-                            ),
-                          }),
-                        )
-                        .catch((e) => setError(String(e)));
-                    }}
-                  >
-                    Delete recording
-                  </button>
-                )}
-              </div>
-            ))}
+            {!recorder.recording &&
+              recorder.status !== "saving" &&
+              entries.map((r) => (
+                <div key={r.id}>
+                  <RecordingPlayer entry={r} />
+                  {session.mode === "practice" && !recorder.recording && (
+                    <button
+                      onClick={() => {
+                        void deleteAsset(r.asset)
+                          .then(() =>
+                            useWorkStore.getState().update({
+                              recordings: session.recordings.filter(
+                                (e) => e.id !== r.id,
+                              ),
+                            }),
+                          )
+                          .catch((e) => setError(String(e)));
+                      }}
+                    >
+                      Delete recording
+                    </button>
+                  )}
+                </div>
+              ))}
           </>
         )}
       </div>

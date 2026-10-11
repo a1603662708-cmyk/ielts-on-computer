@@ -231,7 +231,15 @@ test("Speaking: MediaRecorder creates playable bytes and retains them after refr
   await expect(
     page.getByText("● Recording — saving every 500 ms"),
   ).toBeVisible();
-  await expect(page.getByText(/Part 1 · [1-9]/)).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("ielts.journal.work.session")!)
+            .recordings[0]?.duration ?? 0,
+      ),
+    )
+    .toBeGreaterThan(1);
   await page
     .getByRole("button", { name: "Stop recording", exact: true })
     .click();
