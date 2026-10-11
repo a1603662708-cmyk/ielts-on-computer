@@ -6,9 +6,9 @@ class MockMediaRecorder extends EventTarget {
   static isTypeSupported = vi.fn(() => true);
   mimeType = "audio/webm";
   state: "inactive" | "recording" = "inactive";
-  ondataavailable: ((e: any) => void) | null = null;
+  ondataavailable: ((e: unknown) => void) | null = null;
   onerror: (() => void) | null = null;
-  constructor(public stream: any, public options: any) {
+  constructor(public stream: unknown, public options: unknown) {
     super();
   }
   start() {
@@ -25,10 +25,10 @@ Object.defineProperty(globalThis, "window", {
   configurable: true,
   writable: true,
 });
-(globalThis as any).MediaRecorder = MockMediaRecorder;
+(globalThis as Record<string, unknown>).MediaRecorder = MockMediaRecorder;
 
-let resolveGetUserMedia: (stream: any) => void = () => {};
-let getUserMediaPromise: Promise<any> | null = null;
+let resolveGetUserMedia: (stream: unknown) => void = () => {};
+let getUserMediaPromise: Promise<unknown> | null = null;
 const mockStream = {
   getTracks: () => [{ stop: vi.fn() }],
 };
@@ -56,7 +56,6 @@ describe("Regression Test: Bug 1 (startRecording aborted by stopRecording during
     getUserMediaPromise = null;
     useWorkStore.getState().startSpeaking(
       {
-        id: "test-paper",
         title: "Test Speaking Paper",
         part1: ["Question 1", "Question 2"],
         cueCard: "Part 2 Card",
@@ -86,10 +85,9 @@ describe("Regression Test: Bug 1 (startRecording aborted by stopRecording during
     // 5. Wait for both promises to settle
     await Promise.all([startPromise, stopPromise]);
 
-    // 6. Verify bug condition: status remains stuck in "saving" because neither
-    // openRecording's early return nor stopRecording's early return resets status to "idle".
+    // 6. Verify bug fix condition: status correctly resets to "idle" rather than getting stuck in "saving".
     const finalState = useRecordingStatus.getState();
     expect(finalState.recording).toBe(false);
-    expect(finalState.status).toBe("saving");
+    expect(finalState.status).toBe("idle");
   });
 });

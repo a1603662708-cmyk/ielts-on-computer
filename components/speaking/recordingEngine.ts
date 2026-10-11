@@ -105,6 +105,7 @@ async function openRecording(question: string, part: number, token: number) {
     const ownedStream = stream;
     if (token !== generation) {
       stream.getTracks().forEach((t) => t.stop());
+      useRecordingStatus.setState({ recording: false, status: "idle", pending: 0, error: "" });
       return;
     }
 
@@ -119,6 +120,7 @@ async function openRecording(question: string, part: number, token: number) {
     if (token !== generation) {
       stream.getTracks().forEach((t) => t.stop());
       await pcm?.dispose();
+      useRecordingStatus.setState({ recording: false, status: "idle", pending: 0, error: "" });
       return;
     }
     const startedAt = Date.now();
@@ -145,6 +147,7 @@ async function openRecording(question: string, part: number, token: number) {
       await deleteRecording(sessionId);
       stream.getTracks().forEach((t) => t.stop());
       await pcm?.dispose();
+      useRecordingStatus.setState({ recording: false, status: "idle", pending: 0, error: "" });
       return;
     }
     record = newRecord;
@@ -221,7 +224,15 @@ export async function stopRecording() {
   if (stopTask) return stopTask;
   stopTask = (async () => {
     if (openingTask) await openingTask;
-    if (!media && !record && !chunks.length) return;
+    if (!media && !record && !chunks.length) {
+      useRecordingStatus.setState({
+        recording: false,
+        status: "idle",
+        pending: 0,
+        error: "",
+      });
+      return;
+    }
     useRecordingStatus.setState({ status: "saving" });
     if (media?.state === "recording") media.stop();
     if (media) await stopped; // stop fires AFTER the last dataavailable.
