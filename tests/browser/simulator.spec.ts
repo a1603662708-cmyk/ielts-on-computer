@@ -254,6 +254,15 @@ test("Speaking: MediaRecorder creates playable bytes and retains them after refr
   await expect(
     page.getByText("● Recording — saving every 500 ms"),
   ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("ielts.journal.work.session")!)
+            .recordings[1]?.duration ?? 0,
+      ),
+    )
+    .toBeGreaterThan(1);
   await page.getByRole("button", { name: "Options", exact: true }).click();
   await page
     .getByRole("menuitem", { name: "Submit test", exact: true })
@@ -262,6 +271,7 @@ test("Speaking: MediaRecorder creates playable bytes and retains them after refr
   await expect(
     page.getByRole("heading", { name: "Speaking saved" }),
   ).toBeVisible();
+  await expect(page.locator("audio")).toHaveCount(2);
   await page.reload();
   await expect(page.locator("audio")).toHaveCount(2);
 });
