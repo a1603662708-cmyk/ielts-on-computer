@@ -10,6 +10,8 @@ for (const ext of ["mp3", "m4a", "wav"])
     data.id = `audio-${ext}`;
     data.book = `Original ${ext} import`;
     await page.goto("/import");
+    await page.getByRole("tab", { name: "Single section" }).click();
+    await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
     await page.getByLabel("Test JSON").fill(JSON.stringify(data));
     await page
       .getByLabel("Source files")
@@ -67,6 +69,8 @@ for (const ext of ["txt", "docx"])
             }),
           );
     await page.goto("/import");
+    await page.getByRole("tab", { name: "Single section" }).click();
+    await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
     await page.getByLabel("Source files").setInputFiles({
       name: `original.${ext}`,
       mimeType: "application/octet-stream",
@@ -106,6 +110,8 @@ test("IM unknown audio references and missing assets fail preflight without star
   data.id = "missing-asset";
   data.sections.listening.paper.audio[0].url = "asset:does-not-exist";
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Test JSON").fill(JSON.stringify(data));
   await page.getByRole("button", { name: "Validate & preview" }).click();
   await page.getByRole("checkbox").check();
@@ -140,6 +146,8 @@ test("IM two-column PDF and headers warn, corrected key saves a real Reading exa
   const start = pdf.length;
   pdf += `xref\n0 6\n0000000000 65535 f \n${offsets.map((o) => String(o).padStart(10, "0") + " 00000 n ").join("\n")}\ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${start}\n%%EOF`;
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Source files").setInputFiles({
     name: "columns.pdf",
     mimeType: "application/pdf",
@@ -187,6 +195,8 @@ test("IM uploaded image remains visible after saved test reload", async ({
   data.id = "image-test";
   data.book = "QA Image";
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Test JSON").fill(JSON.stringify(data));
   await page
     .getByLabel("Source files")

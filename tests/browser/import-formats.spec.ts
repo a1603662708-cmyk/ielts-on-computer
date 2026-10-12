@@ -24,6 +24,8 @@ test("PDF extraction runs locally and requires manual review", async ({
   page,
 }) => {
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Source files").setInputFiles({
     name: "original-fixture.pdf",
     mimeType: "application/pdf",
@@ -47,6 +49,8 @@ test("DOCX text extraction and image attachment do not guess OCR", async ({
     '<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Original passage: a quiet garden.</w:t></w:r></w:p><w:p><w:r><w:t>1. Where is the garden?</w:t></w:r></w:p></w:body></w:document>';
   const buffer = Buffer.from(zipSync({ "word/document.xml": strToU8(xml) }));
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Source files").setInputFiles({
     name: "sample.docx",
     mimeType:

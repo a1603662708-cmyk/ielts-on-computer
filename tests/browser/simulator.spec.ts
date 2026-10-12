@@ -283,6 +283,8 @@ test("Importer: original structured JSON validates, saves, reloads and starts", 
   data.book = "My lawful local papers";
   data.test = 19;
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Test JSON").fill(JSON.stringify(data));
   await page.getByRole("button", { name: "Validate & preview" }).click();
   await page.getByRole("checkbox").check();
@@ -390,6 +392,8 @@ test("Portable library bundle includes media and imports without external refere
   const path = await download.path();
   expect(path).toBeTruthy();
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Source files").setInputFiles({
     name: "copy.ielts.zip",
     mimeType: "application/zip",

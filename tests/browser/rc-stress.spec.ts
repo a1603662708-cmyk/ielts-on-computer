@@ -6,6 +6,8 @@ const fixture = JSON.parse(
 );
 async function importPaper(page: Page, data = fixture) {
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Test JSON").fill(JSON.stringify(data));
   await page.getByRole("button", { name: "Validate & preview" }).click();
   await page.getByRole("checkbox").last().check();
@@ -265,6 +267,8 @@ test("ST04 malformed inputs reject without white screen; missing numbering and e
   page,
 }) => {
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   for (const content of [
     "{broken",
     JSON.stringify({ ...fixture, sections: {} }),

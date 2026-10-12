@@ -308,6 +308,101 @@ button:disabled {
 .field textarea {
   min-height: 150px;
 }
+.import-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 4px;
+  margin: 24px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-panel);
+}
+.local-shell .import-tabs button {
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+.local-shell .import-tabs button[aria-selected="true"] {
+  background: var(--bg-raised);
+  color: var(--accent);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--fg) 16%, transparent);
+}
+.import-flow { max-width: 100%; }
+.import-step {
+  border-top: 1px solid var(--border);
+  padding: 28px 0 32px;
+}
+.import-step-heading { display: flex; align-items: center; gap: 12px; }
+.local-shell .import-step-heading h2 { margin: 0; }
+.import-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 14px;
+  font-weight: 700;
+}
+.import-dropzone {
+  margin-top: 20px;
+  padding: 44px 20px;
+  border: 2px dashed var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  text-align: center;
+}
+.import-dropzone.is-dragging {
+  border-color: var(--accent);
+  background: var(--bg-panel);
+}
+.import-dropzone h3 { font-size: 21px; font-weight: 650; }
+.import-drop-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.import-file-input { display: none; }
+.import-file-types { margin-top: 10px; }
+.import-file-summary { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; }
+.import-section-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.import-section-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg-raised);
+}
+.import-section-card-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.import-section-card h3, .import-unclassified h3 { font-size: 18px; font-weight: 650; }
+.import-status { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 12px; font-weight: 650; white-space: nowrap; }
+.import-status-ready { color: var(--correct); background: color-mix(in srgb, var(--correct) 12%, var(--bg-raised)); }
+.import-status-needs-review { color: var(--warn-fg); background: var(--warn-bg); }
+.import-status-missing { color: var(--muted); background: var(--bg-panel); }
+.import-unclassified { margin-top: 20px; padding: 18px; border: 1px solid var(--border); border-radius: 7px; }
+.import-file-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 0; border-top: 1px solid var(--border); min-width: 0; }
+.import-file-name { flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; font-weight: 550; }
+.import-file-control { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; }
+.import-file-control select { max-width: 100%; min-width: 0; padding: 6px; border: 1px solid var(--border-strong); border-radius: 4px; }
+.import-file-confidence { width: 100%; color: var(--muted); font-size: 12px; }
+.import-file-confidence.needs-review { color: var(--warn-fg); background: var(--warn-bg); padding: 4px 7px; border-radius: 3px; }
+.import-details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; max-width: 780px; }
+.import-details-grid .field { min-width: 0; }
+.import-details-grid input, .import-details-grid select { width: 100%; min-width: 0; }
+.import-advanced { margin-top: 18px; padding: 14px 0; border-top: 1px solid var(--border); }
+.import-advanced summary { color: var(--fg); font-weight: 600; }
+.import-advanced .field textarea { width: 100%; }
+.import-confirm { display: flex; align-items: flex-start; gap: 9px; margin: 18px 0; max-width: 800px; }
+.import-confirm input { margin-top: 4px; }
+.import-final-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.import-final-actions .primary { padding-inline: 24px; }
+@media (max-width: 700px) {
+  .import-section-grid, .import-details-grid { grid-template-columns: 1fr; }
+  .import-dropzone { padding: 30px 14px; }
+  .local-shell .import-tabs button { padding: 10px 14px; }
+}
 .error {
   color: var(--incorrect);
   white-space: pre-wrap;

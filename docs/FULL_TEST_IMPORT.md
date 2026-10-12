@@ -1,0 +1,9 @@
+# Full test import
+
+Open **Import a test → Full test**, drop files onto the page or choose several files or a folder, review each section card, and edit the title, book, test number and module (Academic or General Training). Confirm the review checkbox and choose **Import full test**. The app validates the same `formatVersion: 2` schema as the single-section importer before saving. Missing sections remain absent and appear as **Missing** in the preview. **Advanced → Edit structured test data** exposes the JSON editor when a source needs manual correction; **Review test preview** is available before import.
+
+Files named for Reading, Listening, Writing or Speaking are assigned with high confidence. JSON with a `section` or `type` field takes precedence. Generic audio or transcripts are suggested as Listening but require explicit review; ambiguous files also require assignment. Every file may be moved to another section, Shared, or Ignore. Shared `formatVersion: 2` metadata may supply several sections. A Shared text file is informational and is not silently merged into a section.
+
+Reading and Listening accept structured section JSON (`paper` plus `key`), or separate v1 question and answer JSON files. Writing and Speaking accept their existing section JSON. PDF, DOCX, TXT and Markdown use the existing local text extractor. Extracted text is only a draft: Reading and Listening need complete answer keys before validation; Writing and Speaking may need manually corrected task boundaries. Images and Listening audio are attached through local `asset:` references. A complete test and its new assets are saved together in one IndexedDB transaction. The resulting Library test uses the existing portable bundle exporter.
+
+The editable JSON is the final authority. Classification changes clear the generated draft, so rebuild it after changing assignments. No upload, OCR or AI service is used.

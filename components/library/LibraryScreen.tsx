@@ -114,7 +114,7 @@ export function LibraryScreen() {
         <div className="flex items-start justify-between">
           <div>
             <p className="muted uppercase tracking-widest">
-              Computer-delivered · Academic
+              Computer-delivered IELTS
             </p>
             <h1>IELTS Local Test Simulator</h1>
             <p className="muted">

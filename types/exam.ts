@@ -34,7 +34,7 @@ export const LibrarySchema = z.object({
   id: z.string().min(1),
   book: z.string().min(1),
   test: z.number().int().positive(),
-  module: z.literal("Academic"),
+  module: z.enum(["Academic", "General Training"]),
   title: z.string().min(1),
   createdAt: z.number(),
   sections: z.object({

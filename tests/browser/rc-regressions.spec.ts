@@ -49,6 +49,8 @@ test("RC03 empty answer key values cannot mark blank answers correct", async ({
   const data = structuredClone(demo);
   data.sections.listening.key.answers["1"] = "";
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Test JSON").fill(JSON.stringify(data));
   await page.getByRole("button", { name: "Validate & preview" }).click();
   await expect(
@@ -62,6 +64,8 @@ test("RC04 importing an existing ID requires explicit replacement choice", async
   page,
 }) => {
   await page.goto("/import");
+  await page.getByRole("tab", { name: "Single section" }).click();
+  await expect(page.getByLabel("Test JSON")).not.toHaveValue("");
   await page.getByLabel("Test JSON").fill(JSON.stringify(demo));
   await page.getByRole("button", { name: "Validate & preview" }).click();
   await expect(page.getByText(/This test ID already exists/)).toBeVisible();

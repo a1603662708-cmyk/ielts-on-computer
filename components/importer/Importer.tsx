@@ -17,7 +17,63 @@ import {
   validateAgainstAnswers,
 } from "@/lib/schema";
 import Link from "next/link";
+import { FullTestImporter } from "./FullTestImporter";
+
 export function Importer() {
+  const [mode, setMode] = useState<"single" | "full">("full");
+  return (
+    <>
+      <LocalNav />
+      <main className="local-shell">
+        <h1>Import a test</h1>
+        <p className="muted">
+          Import IELTS papers and media locally. Nothing leaves this device.
+        </p>
+        <div className="import-tabs" role="tablist" aria-label="Import mode">
+          <button
+            id="import-tab-full"
+            role="tab"
+            type="button"
+            aria-selected={mode === "full"}
+            aria-controls="import-panel-full"
+            onClick={() => setMode("full")}
+          >
+            Full test
+          </button>
+          <button
+            id="import-tab-single"
+            role="tab"
+            type="button"
+            aria-selected={mode === "single"}
+            aria-controls="import-panel-single"
+            onClick={() => setMode("single")}
+          >
+            Single section
+          </button>
+        </div>
+        {mode === "full" ? (
+          <div
+            id="import-panel-full"
+            role="tabpanel"
+            aria-labelledby="import-tab-full"
+          >
+            <FullTestImporter />
+          </div>
+        ) : (
+          <div
+            id="import-panel-single"
+            role="tabpanel"
+            aria-labelledby="import-tab-single"
+          >
+            <SingleSectionImporter />
+          </div>
+        )}
+      </main>
+    </>
+  );
+}
+
+function SingleSectionImporter() {
   const [draft, setDraft] = useState("");
   const [ready, setReady] = useState(false);
   const [source, setSource] = useState("");
@@ -243,196 +299,185 @@ export function Importer() {
   }
   return (
     <>
-      <LocalNav />
-      <main className="local-shell">
-        <p className="muted uppercase tracking-widest">Bring your own papers</p>
-        <h1>Import a test</h1>
-        <p className="muted">
-          Local extraction only. Import files you lawfully hold. Nothing is sent
-          to a model or an external server.
-        </p>
-        <label className="field">
-          Add to an existing test, or start a new one
-          <select
-            onChange={(e) => {
-              const found = library.find((t) => t.id === e.target.value);
-              changeDraft(JSON.stringify(found ?? emptyLibrary(), null, 2));
-            }}
-          >
-            <option value="">New test</option>
-            {library.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.book} / Test {t.test}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="grid md:grid-cols-2 gap-6">
-          <section>
-            <h2>1. Source files & text</h2>
-            <label className="field">
-              Section
-              <select
-                value={section}
-                onChange={(e) => setSection(e.target.value as Section)}
-              >
-                {["reading", "listening", "writing", "speaking"].map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              PDF · DOCX · TXT · JSON · ZIP · images · MP3 / M4A / WAV
-              <input
-                aria-label="Source files"
-                type="file"
-                multiple
-                accept=".zip,.pdf,.docx,.txt,.md,.json,.png,.jpg,.jpeg,.webp,.gif,.mp3,.m4a,.wav,.webm,.ogg"
-                disabled={busy || !ready}
-                onChange={(e) => void upload(e.target.files)}
-              />
-            </label>
-            <label className="field">
-              Extracted text — editable
-              <textarea
-                aria-label="Extracted text"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                style={{ minHeight: 260 }}
-              />
-            </label>
-            <button onClick={makeDraft} disabled={!source.trim() || busy}>
-              Create section draft
-            </button>
-            {media.length > 0 && (
-              <>
-                <h3 className="mt-5 font-semibold">Associate local media</h3>
-                {media.map((item, i) => (
-                  <label className="field" key={item.ref}>
-                    {item.name} · Part / Task
-                    <select
-                      value={item.part}
-                      onChange={(e) =>
-                        setMedia((m) =>
-                          m.map((v, j) =>
-                            j === i
-                              ? { ...v, part: Number(e.target.value) }
-                              : v,
-                          ),
-                        )
-                      }
-                    >
-                      {[1, 2, 3, 4].map((n) => (
-                        <option key={n}>{n}</option>
-                      ))}
-                    </select>
-                  </label>
-                ))}
-                <button onClick={attachMedia}>Attach media to JSON</button>
-                <p className="muted">
-                  One full recording: assign Part 1. Separate recordings: assign
-                  Parts 1–4. Images attach to the first question group of the
-                  selected part, or Writing Task 1/2. Edit JSON to move them.
-                </p>
-              </>
-            )}
-          </section>
-          <section>
-            <h2>2. Edit structured test</h2>
-            <p className="muted">
-              Edit book, test, title, parts, question types and answers.
-              Existing v1 question/answer files are supported. See the format
-              guide in the project docs.
-            </p>
-            <label className="field">
-              metadata.json
-              <textarea
-                aria-label="Test JSON"
-                disabled={!ready}
-                spellCheck={false}
-                value={draft}
-                onChange={(e) => changeDraft(e.target.value)}
-                className="font-mono text-xs"
-                style={{ minHeight: 520 }}
-              />
-            </label>
-            <button disabled={!ready || busy} onClick={validate}>
-              Validate & preview
-            </button>
-            <DownloadLink
-              className="local-btn ml-3"
-              href="/demo/metadata.json"
-              filename="metadata.json"
+      <label className="field">
+        Add to an existing test, or start a new one
+        <select
+          onChange={(e) => {
+            const found = library.find((t) => t.id === e.target.value);
+            changeDraft(JSON.stringify(found ?? emptyLibrary(), null, 2));
+          }}
+        >
+          <option value="">New test</option>
+          {library.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.book} / Test {t.test}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="grid md:grid-cols-2 gap-6">
+        <section>
+          <h2>1. Source files & text</h2>
+          <label className="field">
+            Section
+            <select
+              value={section}
+              onChange={(e) => setSection(e.target.value as Section)}
             >
-              Download original example
-            </DownloadLink>
-          </section>
-        </div>
-        {busy && <p role="status">Processing locally…</p>}
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-        {warnings.length > 0 && (
-          <aside className="notice my-6">
-            <strong>Manual review required</strong>
-            <ul className="list-disc pl-5">
-              {warnings.map((w, i) => (
-                <li key={i}>{w}</li>
+              {["reading", "listening", "writing", "speaking"].map((s) => (
+                <option key={s}>{s}</option>
               ))}
-            </ul>
-          </aside>
-        )}
-        {preview && (
-          <section>
-            <h2>3. Preview & save</h2>
-            <PaperPreview test={preview} />
-            {duplicate && (
-              <div className="notice">
-                <p>
-                  This test ID already exists. Saving replaces its library
-                  questions and media; historical attempts remain unchanged.
-                </p>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={replaceExisting}
-                    onChange={(e) => setReplaceExisting(e.target.checked)}
-                  />{" "}
-                  Replace the existing library test
+            </select>
+          </label>
+          <label className="field">
+            PDF · DOCX · TXT · JSON · ZIP · images · MP3 / M4A / WAV
+            <input
+              aria-label="Source files"
+              type="file"
+              multiple
+              accept=".zip,.pdf,.docx,.txt,.md,.json,.png,.jpg,.jpeg,.webp,.gif,.mp3,.m4a,.wav,.webm,.ogg"
+              disabled={busy || !ready}
+              onChange={(e) => void upload(e.target.files)}
+            />
+          </label>
+          <label className="field">
+            Extracted text — editable
+            <textarea
+              aria-label="Extracted text"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              style={{ minHeight: 260 }}
+            />
+          </label>
+            <button onClick={makeDraft} disabled={!ready || !source.trim() || busy}>
+            Create section draft
+          </button>
+          {media.length > 0 && (
+            <>
+              <h3 className="mt-5 font-semibold">Associate local media</h3>
+              {media.map((item, i) => (
+                <label className="field" key={item.ref}>
+                  {item.name} · Part / Task
+                  <select
+                    value={item.part}
+                    onChange={(e) =>
+                      setMedia((m) =>
+                        m.map((v, j) =>
+                          j === i ? { ...v, part: Number(e.target.value) } : v,
+                        ),
+                      )
+                    }
+                  >
+                    {[1, 2, 3, 4].map((n) => (
+                      <option key={n}>{n}</option>
+                    ))}
+                  </select>
                 </label>
-              </div>
-            )}
-            <label className="block my-6">
-              <input
-                type="checkbox"
-                checked={confirmed}
-                onChange={(e) => setConfirmed(e.target.checked)}
-              />{" "}
-              I checked all question types, numbering, passages, media and
-              answer keys. I hold the rights to use these files.
-            </label>
-            <button
-              className="primary"
-              disabled={
-                !confirmed || busy || Boolean(duplicate && !replaceExisting)
-              }
-              onClick={() => void save()}
-            >
-              Save to local Library
-            </button>
-          </section>
-        )}
-        {saved && (
-          <p role="status" className="notice my-4">
-            Saved to Library.{" "}
-            <Link className="underline" href="/">
-              Open Library →
-            </Link>
+              ))}
+              <button onClick={attachMedia}>Attach media to JSON</button>
+              <p className="muted">
+                One full recording: assign Part 1. Separate recordings: assign
+                Parts 1–4. Images attach to the first question group of the
+                selected part, or Writing Task 1/2. Edit JSON to move them.
+              </p>
+            </>
+          )}
+        </section>
+        <section>
+          <h2>2. Edit structured test</h2>
+          <p className="muted">
+            Edit book, test, title, parts, question types and answers. Existing
+            v1 question/answer files are supported. See the format guide in the
+            project docs.
           </p>
-        )}
-      </main>
+          <label className="field">
+            metadata.json
+            <textarea
+              aria-label="Test JSON"
+              disabled={!ready}
+              spellCheck={false}
+              value={draft}
+              onChange={(e) => changeDraft(e.target.value)}
+              className="font-mono text-xs"
+              style={{ minHeight: 520 }}
+            />
+          </label>
+          <button disabled={!ready || busy} onClick={validate}>
+            Validate & preview
+          </button>
+          <DownloadLink
+            className="local-btn ml-3"
+            href="/demo/metadata.json"
+            filename="metadata.json"
+          >
+            Download original example
+          </DownloadLink>
+        </section>
+      </div>
+      {busy && <p role="status">Processing locally…</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      {warnings.length > 0 && (
+        <aside className="notice my-6">
+          <strong>Manual review required</strong>
+          <ul className="list-disc pl-5">
+            {warnings.map((w, i) => (
+              <li key={i}>{w}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
+      {preview && (
+        <section>
+          <h2>3. Preview & save</h2>
+          <PaperPreview test={preview} />
+          {duplicate && (
+            <div className="notice">
+              <p>
+                This test ID already exists. Saving replaces its library
+                questions and media; historical attempts remain unchanged.
+              </p>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={replaceExisting}
+                  onChange={(e) => setReplaceExisting(e.target.checked)}
+                />{" "}
+                Replace the existing library test
+              </label>
+            </div>
+          )}
+          <label className="block my-6">
+            <input
+              type="checkbox"
+              checked={confirmed}
+              onChange={(e) => setConfirmed(e.target.checked)}
+            />{" "}
+            I checked all question types, numbering, passages, media and answer
+            keys. I hold the rights to use these files.
+          </label>
+          <button
+            className="primary"
+            disabled={
+              !confirmed || busy || Boolean(duplicate && !replaceExisting)
+            }
+            onClick={() => void save()}
+          >
+            Save to local Library
+          </button>
+        </section>
+      )}
+      {saved && (
+        <p role="status" className="notice my-4">
+          Saved to Library.{" "}
+          <Link className="underline" href="/">
+            Open Library →
+          </Link>
+        </p>
+      )}
     </>
   );
 }
